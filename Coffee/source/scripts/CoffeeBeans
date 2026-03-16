@@ -1,0 +1,33 @@
+import "CoreLibs/object"
+import "CoreLibs/sprites"
+import "CoreLibs/timer"
+import "CoreLibs/math"
+
+local pd = playdate
+local gfx = pd.graphics
+
+CoffeeBean = {}
+
+
+function CoffeeBean:new(index)
+    local o = {}   
+    setmetatable(o, self)
+    
+    return o
+end
+
+function CoffeeBean:update()
+
+end 
+
+function CoffeeBag:activate()
+    self.mySprite:add()
+end
+
+function CoffeeBag:destroy()
+   self.mySprite:remove()
+end
+
+function CoffeeBag.__index(tab, key)
+    return CoffeeBag[key]
+end

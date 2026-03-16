@@ -1,0 +1,7 @@
+name=Coffee 
+author=Smos Bois
+description=
+bundleID=com.smosbois.coffee
+version=0.0.1
+buildNumber=1
+imagePath=assets/launch
