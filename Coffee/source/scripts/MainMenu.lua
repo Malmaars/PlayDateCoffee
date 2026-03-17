@@ -12,6 +12,19 @@ end
 function MainMenu.update()
 end
 
+function MainMenu:OnDownButtonDown()
+end
+function MainMenu:OnUpButtonDown()
+end
+function MainMenu:OnLeftButtonDown()
+end
+function MainMenu:OnRightButtonDown()
+end
+function MainMenu:OnAButtonDown()
+end
+function MainMenu:OnBButtonDown()
+end  
+
 function MainMenu:onStateExit()
 end
 

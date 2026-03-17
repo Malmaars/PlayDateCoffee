@@ -9,7 +9,7 @@ local gfx = pd.graphics
 CoffeeBag = {}
 
 local moveSpeed = 0.1;
-
+local myBeanType
 --35 per index
 --local targetXPosition
 --250 down, 215 up
@@ -20,7 +20,8 @@ function CoffeeBag:new(index, beanType)
     local o = {}   
     setmetatable(o, self)
     o.bagIndex = index;
-    o.myImage = gfx.image.new("images/CoffeeBagThick")
+    o.myBeanType = beanType
+    o.myImage = gfx.image.new("images/CoffeeBag"..beanType.BeanName)
     o.mySprite = gfx.sprite.new(o.myImage)
     o.mySprite:setZIndex(10)
     o.mySprite:moveTo(o.bagIndex * 35, 250)

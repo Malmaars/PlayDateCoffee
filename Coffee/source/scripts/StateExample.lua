@@ -5,14 +5,14 @@ import "CoreLibs/math"
 
 import "CoroutineManager"
 
-   TestImage = {}
+   StateExample = {}
 
     local pd = playdate
     local gfx = pd.graphics
 
     local allMySprites
 
-    function TestImage.new()
+    function StateExample.new()
         local self = setmetatable({}, TestImage)    
 
         self.backgroundImage = gfx.image.new("images/TestImage")
@@ -24,33 +24,32 @@ import "CoroutineManager"
       return self
     end
 
-    function TestImage:OnDownButtonDown()
+    function StateExample:OnDownButtonDown()
     end
-    function TestImage:OnUpButtonDown()
+    function StateExample:OnUpButtonDown()
     end
-    function TestImage:OnLeftButtonDown()
+    function StateExample:OnLeftButtonDown()
     end
-    function TestImage:OnRightButtonDown()
+    function StateExample:OnRightButtonDown()
     end
-    function TestImage:OnAButtonDown()
+    function StateExample:OnAButtonDown()
     end
-    function TestImage:OnBButtonDown()
+    function StateExample:OnBButtonDown()
     end  
     
-    
-    function TestImage:onStateExit()
+    function StateExample:onStateExit()
         for _, mySprite in pairs(allMySprites) do
             mySprite:remove()
         end
     end
 
-    function TestImage:onStateEnter()
+    function StateExample:onStateEnter()
         for _, mySprite in pairs(allMySprites) do
             mySprite:add()
         end
 
     end
     
-    function TestImage.__index(tab, key)
-        return TestImage[key]
+    function StateExample.__index(tab, key)
+        return StateExample[key]
     end

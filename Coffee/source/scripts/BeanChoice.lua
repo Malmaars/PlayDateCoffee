@@ -3,6 +3,7 @@ import "CoreLibs/sprites"
 import "CoreLibs/timer"
 
 import "CoffeeBag"
+import "CoffeeBean"
 
 local pd = playdate
 local gfx = pd.graphics
@@ -20,27 +21,27 @@ local coffeeBags
 
 function BeanChoice.new()
     local self = setmetatable({}, BeanChoice)
-    coffeeBags = {  CoffeeBag:new(0), 
-                    CoffeeBag:new(1),
-                    CoffeeBag:new(2),
-                    CoffeeBag:new(3),
-                    CoffeeBag:new(4),
-                    CoffeeBag:new(5),
-                    CoffeeBag:new(6),
-                    CoffeeBag:new(7),
-                    CoffeeBag:new(8),
-                    CoffeeBag:new(9),
-                    CoffeeBag:new(10),
-                    CoffeeBag:new(11),
-                    CoffeeBag:new(12),
-                    CoffeeBag:new(13),
-                    CoffeeBag:new(14),
-                    CoffeeBag:new(15),
-                    CoffeeBag:new(16),
-                    CoffeeBag:new(17),
-                    CoffeeBag:new(18),
-                    CoffeeBag:new(19),
-                    CoffeeBag:new(20)}
+    coffeeBags = {  CoffeeBag:new(0, CoffeeBean:new("Peru")),
+                    CoffeeBag:new(1, CoffeeBean:new("Brazil")),
+                    CoffeeBag:new(2, CoffeeBean:new("Moon")),
+                    CoffeeBag:new(3, CoffeeBean:new("Peru")),
+                    CoffeeBag:new(4, CoffeeBean:new("Peru")),
+                    CoffeeBag:new(5, CoffeeBean:new("Peru")),
+                    CoffeeBag:new(6, CoffeeBean:new("Peru")),
+                    CoffeeBag:new(7, CoffeeBean:new("Peru")),
+                    CoffeeBag:new(8, CoffeeBean:new("Peru")),
+                    CoffeeBag:new(9, CoffeeBean:new("Peru")),
+                    CoffeeBag:new(10, CoffeeBean:new("Peru")),
+                    CoffeeBag:new(11, CoffeeBean:new("Peru")),
+                    CoffeeBag:new(12, CoffeeBean:new("Peru")),
+                    CoffeeBag:new(13, CoffeeBean:new("Peru")),
+                    CoffeeBag:new(14, CoffeeBean:new("Peru")),
+                    CoffeeBag:new(15, CoffeeBean:new("Peru")),
+                    CoffeeBag:new(16, CoffeeBean:new("Peru")),
+                    CoffeeBag:new(17, CoffeeBean:new("Peru")),
+                    CoffeeBag:new(18, CoffeeBean:new("Peru")),
+                    CoffeeBag:new(19, CoffeeBean:new("Peru")),
+                    CoffeeBag:new(20, CoffeeBean:new("Peru"))}
 
     self.BeanInfoImage = gfx.image.new("images/CoffeeInfoHeader")
     self.BeanInfoSprite = gfx.sprite.new(self.BeanInfoImage)
@@ -50,7 +51,7 @@ function BeanChoice.new()
     self.WorldMapImage = gfx.image.new("images/WorldMap")
     self.WorldMapSprite = gfx.sprite.new(self.WorldMapImage)
     self.WorldMapSprite:setZIndex(3)
-    self.WorldMapSprite:moveTo(200,120)
+    self.WorldMapSprite:moveTo(306,68)
     
     allMySprites = {backgroundSprite, self.BeanInfoSprite, self.WorldMapSprite}
 
@@ -63,6 +64,13 @@ function BeanChoice.update()
     end
 end
 
+function BeanChoice:OnDownButtonDown()
+    StartStateSwitch("grinder")
+end
+function BeanChoice:OnUpButtonDown()
+    StartStateSwitch("bean choice")
+end
+
 function BeanChoice:OnLeftButtonDown()
     if GameState ~= "bean choice" then
         return
@@ -72,6 +80,7 @@ function BeanChoice:OnLeftButtonDown()
             bag:SetIndex(bag:GetIndex() + 1)
             if bag:GetIndex() == 10 then
                 bag:SetSelected(true)
+                self:ChangeDataVisual(bag)
             else
                 bag:SetSelected(false)
             end
@@ -82,15 +91,31 @@ function BeanChoice:OnRightButtonDown()
     if GameState ~= "bean choice" then
         return
     end
-    print(#coffeeBags)
     for _, bag in pairs(coffeeBags) do
             bag:SetIndex(bag:GetIndex() - 1)
             if bag:GetIndex() == 10 then
                 bag:SetSelected(true)
+                self:ChangeDataVisual(bag)
             else
                 bag:SetSelected(false)
             end
     end
+end
+
+function BeanChoice:ChangeDataVisual(coffeeBagReference)
+    --change the visuals like the map and the bars for the acidity, aroma and body
+    print(coffeeBagReference.myBeanType.BeanName)
+    if coffeeBagReference.myBeanType.BeanName == "Moon" then
+            self.WorldMapImage = gfx.image.new("images/MoonMap")
+    else
+            self.WorldMapImage = gfx.image.new("images/WorldMap")
+    end
+end
+
+function BeanChoice:OnAButtonDown()
+end
+
+function BeanChoice:OnBButtonDown()
 end
 
 function BeanChoice:onStateExit()

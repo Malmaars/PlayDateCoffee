@@ -18,12 +18,12 @@ local Body = 0
 function CoffeeBean:new(coffeeType)
     local o = {}   
     setmetatable(o, self)
-    BeanName = coffeeType
+    o.BeanName = coffeeType
 
     if coffeeType == "Peru" then
-        Acidity = 3
-        Aroma = 6
-        Body = 9
+        o.Acidity = 3
+        o.Aroma = 6
+        o.Body = 9
     end
 
     return o

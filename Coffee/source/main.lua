@@ -81,7 +81,6 @@ function StartStateSwitch(newState)
 end
 
 function SwitchState(newState)
-    
     --do nothing if you want to switch to the same state
     if GameState==newState then
         return
@@ -103,13 +102,10 @@ function SwitchState(newState)
             --run exitstate function
             if GameState=="grinder" then
                 grinderState:onStateExit()
-                newStateVariable = grinderState
             elseif GameState=="main menu" then
                 mainmenuState:onStateExit()
-                newStateVariable = mainmenuState
             elseif GameState=="bean choice" then
                 beanChoiceState:onStateExit()
-                newStateVariable = beanChoiceState
             elseif GameState=="TestImage" then
                 testImageState.onStateExit()
             end
@@ -185,5 +181,5 @@ function MoveSprite(sprite, targetX, targetY, speed)
 end
 
 StateSwitchingCoroutine = coroutine.create( function() 
-                                                SwitchState("grinder")  
+                                                SwitchState("bean choice")  
                                                 end)
