@@ -6,28 +6,28 @@ import "CoreLibs/math"
 local pd = playdate
 local gfx = pd.graphics
 
-CoffeeBean = {}
+ClassExample = {}
 
 
-function CoffeeBean:new(index)
+function ClassExample:new()
     local o = {}   
     setmetatable(o, self)
     
     return o
 end
 
-function CoffeeBean:update()
+function ClassExample:update()
 
 end 
 
-function CoffeeBag:activate()
+function ClassExample:activate()
     self.mySprite:add()
 end
 
-function CoffeeBag:destroy()
+function ClassExample:destroy()
    self.mySprite:remove()
 end
 
-function CoffeeBag.__index(tab, key)
-    return CoffeeBag[key]
+function ClassExample.__index(tab, key)
+    return ClassExample[key]
 end

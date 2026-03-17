@@ -15,7 +15,8 @@ local moveSpeed = 0.1;
 --250 down, 215 up
 --local targetYposition
 
-function CoffeeBag:new(index)
+--index is an integer, beantype is an instance of class CoffeeBean
+function CoffeeBag:new(index, beanType)
     local o = {}   
     setmetatable(o, self)
     o.bagIndex = index;

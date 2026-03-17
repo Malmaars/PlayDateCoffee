@@ -50,29 +50,35 @@ function pd.update()
 end
 
 function pd.AButtonDown()
-    if StateSwitchingCoroutine == nil or coroutine.status(StateSwitchingCoroutine) == "dead" then     
-        StateSwitchingCoroutine = coroutine.create( function()
-                                                        SwitchState("bean choice")
-                                                    end)
-    end
+    StartStateSwitch("bean choice")                                                
 end
 
 function pd.BButtonDown()
-    if StateSwitchingCoroutine == nil or coroutine.status(StateSwitchingCoroutine) == "dead" then     
-        StateSwitchingCoroutine = coroutine.create( function()
-                                                        SwitchState("TestImage")
-                                                    end)
-    end
+    StartStateSwitch("TestImage")                                                
+end
+
+function pd.upButtonDown()
+    CurrentState:OnUpButtonDown()
+end
+function pd.downButtonDown()
+    CurrentState:OnDownButtonDown()
 end
 
 function pd.leftButtonDown()
-    BeanChoice:OnLeftButtonDown()
+    CurrentState:OnLeftButtonDown()
 end
 
 function pd.rightButtonDown()
-    BeanChoice:OnRightButtonDown()
+    CurrentState:OnRightButtonDown()
 end
 
+function StartStateSwitch(newState)
+    if StateSwitchingCoroutine == nil or coroutine.status(StateSwitchingCoroutine) == "dead" then     
+        StateSwitchingCoroutine = coroutine.create( function()
+                                                        SwitchState(newState)
+                                                    end)
+    end
+end
 
 function SwitchState(newState)
     
@@ -91,15 +97,19 @@ function SwitchState(newState)
         transitionSprite:moveTo(200, animatorValue)
         local stateSwitch = false
 
+        local newStateVariable
         if stateSwitch==false and transitionAnimator:currentValue() >= 120 then
             stateSwitch = true
             --run exitstate function
             if GameState=="grinder" then
                 grinderState:onStateExit()
+                newStateVariable = grinderState
             elseif GameState=="main menu" then
                 mainmenuState:onStateExit()
+                newStateVariable = mainmenuState
             elseif GameState=="bean choice" then
                 beanChoiceState:onStateExit()
+                newStateVariable = beanChoiceState
             elseif GameState=="TestImage" then
                 testImageState.onStateExit()
             end
@@ -107,15 +117,21 @@ function SwitchState(newState)
             --run enter state function
             if newState=="grinder" then
                 grinderState:onStateEnter()
+                newStateVariable = grinderState
             elseif newState=="main menu" then
                 mainmenuState:onStateEnter()
-            elseif GameState=="bean choice" then
+                newStateVariable = mainmenuState
+            elseif newState=="bean choice" then
                 beanChoiceState:onStateEnter()
-            elseif GameState=="TestImage" then
+                newStateVariable = beanChoiceState
+            elseif newState=="TestImage" then
                 testImageState.onStateEnter()
+                newStateVariable = testImageState
             end
 
             GameState = newState
+            CurrentState = newStateVariable
+            
 
         end
 

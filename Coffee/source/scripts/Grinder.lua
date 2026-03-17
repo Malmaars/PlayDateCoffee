@@ -116,7 +116,6 @@ import "CoroutineManager"
         end
 
         crankChange = math.floor(crankChange + 0.5)
-        print(crankChange)
 
         local targetCursorPosition = cursorMin - ((cursorMin - cursorMax) / 15 * crankChange)
 
@@ -162,9 +161,22 @@ import "CoroutineManager"
         for _, mySprite in pairs(allMySprites) do
             mySprite:add()
         end
-
     end
-    
+
+    function Grinder:OnDownButtonDown()
+    end
+    function Grinder:OnUpButtonDown()
+        StartStateSwitch("bean choice")
+    end
+    function Grinder:OnLeftButtonDown()
+    end
+    function Grinder:OnRightButtonDown()
+    end
+    function Grinder:OnAButtonDown()
+    end
+    function Grinder:OnBButtonDown()
+    end
+
     function Grinder.__index(tab, key)
         return Grinder[key]
     end
