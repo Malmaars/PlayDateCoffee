@@ -24,6 +24,14 @@ function CoffeeBean:new(coffeeType)
         o.Acidity = 3
         o.Aroma = 6
         o.Body = 9
+    elseif coffeeType == "Brazil" then
+        o.Acidity = 4
+        o.Aroma = 2
+        o.Body = 7  
+    elseif coffeeType == "Moon" then
+        o.Acidity = 8
+        o.Aroma = 5
+        o.Body = 5  
     end
 
     return o

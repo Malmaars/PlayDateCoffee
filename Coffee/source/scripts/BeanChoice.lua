@@ -4,6 +4,7 @@ import "CoreLibs/timer"
 
 import "CoffeeBag"
 import "CoffeeBean"
+import "MapPin"
 
 local pd = playdate
 local gfx = pd.graphics
@@ -32,8 +33,8 @@ function BeanChoice.new()
                     CoffeeBag:new(8, CoffeeBean:new("Peru")),
                     CoffeeBag:new(9, CoffeeBean:new("Peru")),
                     CoffeeBag:new(10, CoffeeBean:new("Peru")),
-                    CoffeeBag:new(11, CoffeeBean:new("Peru")),
-                    CoffeeBag:new(12, CoffeeBean:new("Peru")),
+                    CoffeeBag:new(11, CoffeeBean:new("Brazil")),
+                    CoffeeBag:new(12, CoffeeBean:new("Moon")),
                     CoffeeBag:new(13, CoffeeBean:new("Peru")),
                     CoffeeBag:new(14, CoffeeBean:new("Peru")),
                     CoffeeBag:new(15, CoffeeBean:new("Peru")),
@@ -48,12 +49,36 @@ function BeanChoice.new()
     self.BeanInfoSprite:setZIndex(4)
     self.BeanInfoSprite:moveTo(200,120)
     
-    self.WorldMapImage = gfx.image.new("images/WorldMap")
-    self.WorldMapSprite = gfx.sprite.new(self.WorldMapImage)
+    --Image of map    
+    self.WorldMap = playdate.graphics.imagetable.new("images/CoffeeMapTable")
+    self.MapMp = playdate.graphics.tilemap.new()
+    self.MapMp:setImageTable(self.WorldMap)
+    self.WorldMapSprite = playdate.graphics.sprite.new(self.MapMp)
     self.WorldMapSprite:setZIndex(3)
     self.WorldMapSprite:moveTo(306,68)
+
+    --pin on the map
+    pinOnMap = MapPin:new()
+
+    --images of the bars for coffee stats
+    self.CoffeeStatsBar = playdate.graphics.imagetable.new("images/CoffeeStatsBar")
+    self.barMP = playdate.graphics.tilemap.new()
+    self.barMP:setImageTable(self.CoffeeStatsBar)
+    self.AcidityBarSprite = playdate.graphics.sprite.new(self.barMP)
+    self.AcidityBarSprite:setZIndex(5)
+    self.AcidityBarSprite:moveTo(165, 38)
     
-    allMySprites = {backgroundSprite, self.BeanInfoSprite, self.WorldMapSprite}
+    self.AromaBarSprite = playdate.graphics.sprite.new(self.barMP)
+    self.AromaBarSprite:setZIndex(5)
+    self.AromaBarSprite:moveTo(165, 73)
+    
+    self.BodyBarSprite = playdate.graphics.sprite.new(self.barMP)
+    self.BodyBarSprite:setZIndex(5)
+    self.BodyBarSprite:moveTo(165, 108)
+
+
+    self:ChangeDataVisual(coffeeBags[10])
+    allMySprites = {backgroundSprite, self.BeanInfoSprite, self.WorldMapSprite, self.AcidityBarSprite, self.AromaBarSprite, self.BodyBarSprite}
 
     return self
 end
@@ -62,6 +87,7 @@ function BeanChoice.update()
     for _, bag in pairs(coffeeBags) do
             bag:update()
     end
+    pinOnMap:update()
 end
 
 function BeanChoice:OnDownButtonDown()
@@ -104,12 +130,25 @@ end
 
 function BeanChoice:ChangeDataVisual(coffeeBagReference)
     --change the visuals like the map and the bars for the acidity, aroma and body
-    print(coffeeBagReference.myBeanType.BeanName)
     if coffeeBagReference.myBeanType.BeanName == "Moon" then
-            self.WorldMapImage = gfx.image.new("images/MoonMap")
+            self.WorldMapSprite:setImage(self.WorldMap:getImage(1))    
     else
-            self.WorldMapImage = gfx.image.new("images/WorldMap")
+            self.WorldMapSprite:setImage(self.WorldMap:getImage(2))    
     end
+
+    --change the location of the map pin, with a cool animation
+    if coffeeBagReference.myBeanType.BeanName == "Moon" then
+        pinOnMap:SetNewLocation(350,40)
+    elseif coffeeBagReference.myBeanType.BeanName == "Peru" then
+        pinOnMap:SetNewLocation(265,70)    
+    elseif coffeeBagReference.myBeanType.BeanName == "Brazil" then
+        pinOnMap:SetNewLocation(275,65)    
+    end
+    
+
+    self.AcidityBarSprite:setImage(self.CoffeeStatsBar:getImage(coffeeBagReference.myBeanType.Acidity + 1))
+    self.AromaBarSprite:setImage(self.CoffeeStatsBar:getImage(coffeeBagReference.myBeanType.Aroma + 1))
+    self.BodyBarSprite:setImage(self.CoffeeStatsBar:getImage(coffeeBagReference.myBeanType.Body + 1))
 end
 
 function BeanChoice:OnAButtonDown()
@@ -126,6 +165,7 @@ function BeanChoice:onStateExit()
         for _, mySprite in pairs(allMySprites) do
             mySprite:remove()
         end
+        pinOnMap:destroy()
 end
 
 function BeanChoice:onStateEnter()
@@ -139,6 +179,9 @@ function BeanChoice:onStateEnter()
         for _, mySprite in pairs(allMySprites) do
             mySprite:add()
         end
+        pinOnMap:activate()
+
+        self:ChangeDataVisual(coffeeBags[10])
 end
 
 function BeanChoice.__index(tab, key)
