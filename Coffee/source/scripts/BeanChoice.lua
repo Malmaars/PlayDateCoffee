@@ -5,6 +5,7 @@ import "CoreLibs/timer"
 import "CoffeeBag"
 import "CoffeeBean"
 import "MapPin"
+import "TextClass"
 
 local pd = playdate
 local gfx = pd.graphics
@@ -67,14 +68,17 @@ function BeanChoice.new()
     self.AcidityBarSprite = playdate.graphics.sprite.new(self.barMP)
     self.AcidityBarSprite:setZIndex(5)
     self.AcidityBarSprite:moveTo(165, 38)
+    self.AcidityBarText = TextClass:new("ACIDITY", 102, 22, 5)
     
     self.AromaBarSprite = playdate.graphics.sprite.new(self.barMP)
     self.AromaBarSprite:setZIndex(5)
     self.AromaBarSprite:moveTo(165, 73)
+    self.AromaBarText = TextClass:new("AROMA", 102, 57, 5)
     
     self.BodyBarSprite = playdate.graphics.sprite.new(self.barMP)
     self.BodyBarSprite:setZIndex(5)
     self.BodyBarSprite:moveTo(165, 108)
+    self.BodyBarText = TextClass:new("BODY", 102, 92, 5)
 
 
     self:ChangeDataVisual(coffeeBags[10])
@@ -90,8 +94,11 @@ function BeanChoice.update()
     pinOnMap:update()
 end
 
+function BeanChoice:DrawAfterSprites()
+
+end
+
 function BeanChoice:OnDownButtonDown()
-    StartStateSwitch("grinder")
 end
 function BeanChoice:OnUpButtonDown()
     StartStateSwitch("bean choice")
@@ -152,6 +159,14 @@ function BeanChoice:ChangeDataVisual(coffeeBagReference)
 end
 
 function BeanChoice:OnAButtonDown()
+    --pick the specific bag, and trigger an open animation
+    for _, bag in pairs(coffeeBags) do
+        if bag:GetIndex() == 10 then
+            bag:SetPicked(true)
+            UpdateCurrentProduct(bag.myBeanType, nil, nil)
+        end
+    end
+    StartStateSwitch("grinder")
 end
 
 function BeanChoice:OnBButtonDown()
@@ -165,12 +180,16 @@ function BeanChoice:onStateExit()
         for _, mySprite in pairs(allMySprites) do
             mySprite:remove()
         end
+        self.AcidityBarText:destroy()
+        self.AromaBarText:destroy()
+        self.BodyBarText:destroy()
         pinOnMap:destroy()
 end
 
 function BeanChoice:onStateEnter()
         for _, bag in pairs(coffeeBags) do
             bag:activate()
+            bag:SetPicked(false)
             if bag:GetIndex() == 10 then
                 bag:SetSelected(true)
             end            
@@ -180,8 +199,11 @@ function BeanChoice:onStateEnter()
             mySprite:add()
         end
         pinOnMap:activate()
-
+        self.AcidityBarText:activate()
+        self.AromaBarText:activate()
+        self.BodyBarText:activate()
         self:ChangeDataVisual(coffeeBags[10])
+        MakeNewProduct()      
 end
 
 function BeanChoice.__index(tab, key)

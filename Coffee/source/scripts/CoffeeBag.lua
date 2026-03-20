@@ -24,7 +24,7 @@ function CoffeeBag:new(index, beanType)
     o.myImage = gfx.image.new("images/CoffeeBag"..beanType.BeanName)
     o.mySprite = gfx.sprite.new(o.myImage)
     o.mySprite:setZIndex(10)
-    o.mySprite:moveTo(o.bagIndex * 35, 250)
+    o.mySprite:moveTo(index * 50 - 300, 250)
     o.selected = false
 
     o.targetXPosition = index * 50- 300
@@ -35,7 +35,9 @@ function CoffeeBag:new(index, beanType)
 end
 
 function CoffeeBag:update()
-    if self.selected then
+    if self.picked then
+        self.targetYposition = -100    
+    elseif self.selected then
         self.targetYposition = 205
     else
         self.targetYposition = 250
@@ -74,8 +76,13 @@ function CoffeeBag:SetSelected(bool)
     self.selected = bool
 end
 
+function CoffeeBag:SetPicked(bool)
+    self.picked = bool
+end
+
 function CoffeeBag:activate()
     self.mySprite:add()
+    self.mySprite:moveTo(self.bagIndex * 50 - 300, 250)
 end
 
 function CoffeeBag:destroy()

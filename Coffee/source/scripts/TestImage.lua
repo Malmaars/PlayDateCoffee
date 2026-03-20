@@ -23,7 +23,9 @@ import "CoroutineManager"
         allMySprites = {self.backgroundSprite}
       return self
     end
-
+    
+    function TestImage:DrawAfterSprites()
+    end
     function TestImage:OnDownButtonDown()
     end
     function TestImage:OnUpButtonDown()

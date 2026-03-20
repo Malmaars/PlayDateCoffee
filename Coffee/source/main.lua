@@ -10,6 +10,10 @@ import "scripts/Grinder"
 import "scripts/MainMenu"
 import "scripts/BeanChoice"
 import "scripts/TestImage"
+import "scripts/Fonts"
+import "scripts/Product"
+--fonts
+FontAmmonite = gfx.font.new("fonts/ammonite")
 
 
 -- milliseconds between each shake
@@ -37,6 +41,7 @@ local transitionImage = gfx.image.new("images/transition")
 local transitionSprite = gfx.sprite.new(transitionImage)
 transitionSprite:setZIndex(100)
 local transitionAnimator
+local currentProduct
 
 function pd.update()
     
@@ -45,16 +50,23 @@ function pd.update()
 
     UpdateCoroutine(StateSwitchingCoroutine)
 
+    --draw the sprites
     gfx.sprite.update()
+    
+    --draw text after sprites so it's on top
+    if CurrentState ~= nil then
+        CurrentState:DrawAfterSprites()
+    end 
+
     playdate.timer.updateTimers()
 end
 
 function pd.AButtonDown()
-    StartStateSwitch("bean choice")                                                
+    CurrentState:OnAButtonDown()
 end
 
 function pd.BButtonDown()
-    StartStateSwitch("TestImage")                                                
+    CurrentState:OnBButtonDown()
 end
 
 function pd.upButtonDown()
@@ -71,6 +83,23 @@ end
 function pd.rightButtonDown()
     CurrentState:OnRightButtonDown()
 end
+
+function MakeNewProduct()
+    currentProduct = Product:new()
+end
+
+function UpdateCurrentProduct(beans, fluid, cup)
+    if beans ~= nil then
+        currentProduct:SetCoffeeBeans(beans)
+    end
+    if fluid ~= nil then
+        currentProduct:SetFluidType(fluid)
+    end
+    if cup ~= nil then
+        currentProduct:SetCupType(cup)
+    end
+end
+
 
 function StartStateSwitch(newState)
     if StateSwitchingCoroutine == nil or coroutine.status(StateSwitchingCoroutine) == "dead" then     
@@ -181,5 +210,5 @@ function MoveSprite(sprite, targetX, targetY, speed)
 end
 
 StateSwitchingCoroutine = coroutine.create( function() 
-                                                SwitchState("bean choice")  
+                                                SwitchState("grinder")  
                                                 end)

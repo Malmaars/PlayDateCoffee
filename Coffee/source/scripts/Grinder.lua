@@ -2,6 +2,7 @@ import "CoreLibs/object"
 import "CoreLibs/sprites"
 import "CoreLibs/timer"
 import "CoreLibs/math"
+import "CoreLibs/animation"
 
 import "CoroutineManager"
 
@@ -11,8 +12,6 @@ import "CoroutineManager"
     local gfx = pd.graphics
 
     local currentGrinderIndex = 1
-    local grinderShakeTimer = pd.timer.new(0)
-    local grinderShakeTimerLength = 1
     local grinderShakeCoroutine
 
     local moveDownCoroutine
@@ -22,6 +21,9 @@ import "CoroutineManager"
     local cursorMax = 20
 
     local allMySprites
+    local performanceTimer
+    local correctlyHitGrinds
+
 
     function Grinder.new()
         local self = setmetatable({}, Grinder)    
@@ -40,21 +42,46 @@ import "CoroutineManager"
         self.BarImage = gfx.image.new("images/FillBar")
         self.BarSprite = gfx.sprite.new(self.BarImage)
         self.BarSprite:setZIndex(1)
-        self.BarSprite:moveTo(290, 120)
+        self.BarSprite:moveTo(340, 120)
+        
+        self.BarAlignImage = gfx.image.new("images/BarAlign")
+        self.BarAlignSprite = gfx.sprite.new(self.BarAlignImage)
+        self.BarAlignSprite:setZIndex(2)
+        self.BarAlignSprite:moveTo(340,120)
 
         self.cursorImage = gfx.image.new("images/cursor")
         self.cursorSprite = gfx.sprite.new(self.cursorImage)
         self.cursorSprite:setZIndex(2)
-        self.cursorSprite:moveTo(330,120)
+        self.cursorSprite:moveTo(380,120)
 
+        self.perfectAnimationImage = gfx.imagetable.new("images/perfect")
+        self.perfectAnimationLoop = gfx.animation.loop.new(40, self.perfectAnimationImage, false)
+        self.perfectAnimationSprite = gfx.sprite.new(self.perfectAnimationLoop:image())
+        self.perfectAnimationSprite:setZIndex(6)
+        self.perfectAnimationSprite:moveTo(260,120)
 
-        self.BarAlignImage = gfx.image.new("images/BarAlign")
-        self.BarAlignSprite = gfx.sprite.new(self.BarAlignImage)
-        self.BarAlignSprite:setZIndex(2)
-        self.BarAlignSprite:moveTo(290,120)
+        self.greatAnimationImage = gfx.imagetable.new("images/great")
+        self.greatAnimationLoop = gfx.animation.loop.new(40, self.greatAnimationImage, false)
+        self.greatAnimationSprite = gfx.sprite.new(self.greatAnimationLoop:image())
+        self.greatAnimationSprite:setZIndex(6)
+        self.greatAnimationSprite:moveTo(260,120)
 
+        self.fasterAnimationImage = gfx.imagetable.new("images/faster")
+        self.fasterAnimationLoop = gfx.animation.loop.new(40, self.fasterAnimationImage, false)
+        self.fasterAnimationSprite = gfx.sprite.new(self.fasterAnimationLoop:image())
+        self.fasterAnimationSprite:setZIndex(6)
+        self.fasterAnimationSprite:moveTo(260,120)
 
-        allMySprites = {self.grinderSprite, self.backgroundSprite, self.BarSprite, self.BarAlignSprite, self.cursorSprite}
+        self.slowerAnimationImage = gfx.imagetable.new("images/slower")
+        self.slowerAnimationLoop = gfx.animation.loop.new(40, self.slowerAnimationImage, false)
+        self.slowerAnimationSprite = gfx.sprite.new(self.slowerAnimationLoop:image())
+        self.slowerAnimationSprite:setZIndex(6)
+        self.slowerAnimationSprite:moveTo(260,120)
+
+        performanceTimer = pd.timer.new(700, function() CheckGrinderHit(self, performanceTimer) end)
+
+        allMySprites = {self.grinderSprite, self.backgroundSprite, self.BarSprite, self.BarAlignSprite, self.cursorSprite, 
+                        self.perfectAnimationSprite, self.greatAnimationSprite, self.fasterAnimationSprite, self.slowerAnimationSprite}
       return self
     end
 
@@ -68,6 +95,11 @@ import "CoroutineManager"
         UpdateCoroutine(grinderShakeCoroutine)
         UpdateCoroutine(moveDownCoroutine)
         UpdateCoroutine(moveUpCoroutine)
+
+        self.perfectAnimationSprite:setImage(self.perfectAnimationLoop:image())
+        self.greatAnimationSprite:setImage(self.greatAnimationLoop:image())
+        self.slowerAnimationSprite:setImage(self.slowerAnimationLoop:image())
+        self.fasterAnimationSprite:setImage(self.fasterAnimationLoop:image())
     end
 
     function Grinder:AnimateGrinder()
@@ -99,7 +131,7 @@ import "CoroutineManager"
             end
 
             if currentGrinderIndex ~= grinderTableIndex then
-                self:CheckGrinderHit()
+                --self:CheckGrinderHit()
             end
             currentGrinderIndex = grinderTableIndex
 
@@ -115,27 +147,29 @@ import "CoroutineManager"
             crankChange = 15.4
         end
 
+        
         crankChange = math.floor(crankChange + 0.5)
 
         local targetCursorPosition = cursorMin - ((cursorMin - cursorMax) / 15 * crankChange)
-
+        
         self.cursorSprite:moveTo(
         self.cursorSprite.x,
         playdate.math.lerp(self.cursorSprite.y, targetCursorPosition, 0.02))
-
     end
 
-    function Grinder:CheckGrinderHit()
-        if (self.cursorSprite.y > self.BarAlignSprite.y + 1 and self.cursorSprite.y < self.BarAlignSprite.y + 12) or (self.cursorSprite.y < self.BarAlignSprite.y - 1 and self.cursorSprite.y > self.BarAlignSprite.y - 12) then
-            --Good!           
-        elseif(self.cursorSprite.y > self.BarAlignSprite.y - 1 and self.cursorSprite.y < self.BarAlignSprite.y + 1) then
-            --Near Miss!
-        elseif(self.cursorSprite.y == self.BarAlignSprite.y - 12 or self.cursorSprite.y == self.BarAlignSprite.y + 12) then
-            --Perfect!
-        else
-            --Miss!
+    function CheckGrinderHit(grinder, timer)
+        if grinder.cursorSprite.y >= 119 and grinder.cursorSprite.y <= 121 then
+            grinder.perfectAnimationLoop.frame = 1
+            correctlyHitGrinds += 1
+        elseif (grinder.cursorSprite.y > 121 and grinder.cursorSprite.y <= 132) or (grinder.cursorSprite.y < 119 and grinder.cursorSprite.y >= 108) then
+            grinder.greatAnimationLoop.frame = 1
+            correctlyHitGrinds += 1
+        elseif grinder.cursorSprite.y < 108 then
+            grinder.slowerAnimationLoop.frame = 1
+        elseif grinder.cursorSprite.y > 132 then
+            grinder.fasterAnimationLoop.frame = 1
         end
-
+        performanceTimer = pd.timer.new(700, function() CheckGrinderHit(grinder, performanceTimer) end)
     end
 
     
@@ -161,12 +195,14 @@ import "CoroutineManager"
         for _, mySprite in pairs(allMySprites) do
             mySprite:add()
         end
-    end
 
+        correctlyHitGrinds = 0
+    end
+    function Grinder:DrawAfterSprites()
+    end
     function Grinder:OnDownButtonDown()
     end
     function Grinder:OnUpButtonDown()
-        StartStateSwitch("bean choice")
     end
     function Grinder:OnLeftButtonDown()
     end
