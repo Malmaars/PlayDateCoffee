@@ -4,7 +4,7 @@ import "CoreLibs/timer"
 import "CoreLibs/math"
 import "CoreLibs/animation"
 
-import "CoroutineManager"
+import "../CoroutineManager"
 
    Grinder = {}
 
@@ -34,7 +34,7 @@ import "CoroutineManager"
         self.grinderSprite = playdate.graphics.sprite.new(self.mp)
         self.grinderSprite:moveTo(120,120)
 
-        self.backgroundImage = gfx.image.new("images/transition")
+        self.backgroundImage = gfx.image.new("images/fullBlack")
         self.backgroundSprite = gfx.sprite.new(self.backgroundImage)
         self.backgroundSprite:setZIndex(-2)
         self.backgroundSprite:moveTo(200,120)
@@ -178,7 +178,7 @@ import "CoroutineManager"
             coroutine.close(moveUpCoroutine)
         end
         moveDownCoroutine = coroutine.create(  function()
-                                                        MoveSprite(self.grinderSprite, 140, 360, 0.05)
+                                                        MoveSprite(self.grinderSprite, self.grinderSprite.x, self.grinderSprite.y, 140, 360, 0.05)
                                                     end)
         for _, mySprite in pairs(allMySprites) do
             mySprite:remove()
@@ -190,7 +190,7 @@ import "CoroutineManager"
             coroutine.close(moveDownCoroutine)
         end
         moveUpCoroutine = coroutine.create(  function()
-                                                        MoveSprite(self.grinderSprite, 140, 120, 0.05)
+                                                        MoveSprite(self.grinderSprite, 140, 400, 140, 130, 0.05)
                                                     end)
         for _, mySprite in pairs(allMySprites) do
             mySprite:add()
@@ -201,6 +201,7 @@ import "CoroutineManager"
     function Grinder:DrawAfterSprites()
     end
     function Grinder:OnDownButtonDown()
+        StartStateSwitch("bean choice")
     end
     function Grinder:OnUpButtonDown()
     end

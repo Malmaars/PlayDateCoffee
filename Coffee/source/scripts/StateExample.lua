@@ -13,7 +13,7 @@ import "CoroutineManager"
     local allMySprites
 
     function StateExample.new()
-        local self = setmetatable({}, TestImage)    
+        local self = setmetatable({}, StateExample)    
 
         self.backgroundImage = gfx.image.new("images/TestImage")
         self.backgroundSprite = gfx.sprite.new(self.backgroundImage)
@@ -23,7 +23,8 @@ import "CoroutineManager"
         allMySprites = {self.backgroundSprite}
       return self
     end
-
+    function StateExample:DrawAfterSprites()
+    end
     function StateExample:OnDownButtonDown()
     end
     function StateExample:OnUpButtonDown()

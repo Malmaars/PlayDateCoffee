@@ -2,10 +2,10 @@ import "CoreLibs/object"
 import "CoreLibs/sprites"
 import "CoreLibs/timer"
 
-import "CoffeeBag"
-import "CoffeeBean"
-import "MapPin"
-import "TextClass"
+import "../CoffeeBag"
+import "../CoffeeBean"
+import "../MapPin"
+import "../TextClass"
 
 local pd = playdate
 local gfx = pd.graphics
@@ -14,7 +14,7 @@ BeanChoice = {}
 
 local allMySprites
 
-local backgroundImage = gfx.image.new("images/transition")
+local backgroundImage = gfx.image.new("images/fullBlack")
 local backgroundSprite = gfx.sprite.new(backgroundImage)
 backgroundSprite:setZIndex(-2)
 backgroundSprite:moveTo(200,120)
@@ -87,7 +87,7 @@ function BeanChoice.new()
     return self
 end
 
-function BeanChoice.update()
+function BeanChoice:update()
     for _, bag in pairs(coffeeBags) do
             bag:update()
     end

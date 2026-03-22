@@ -6,10 +6,11 @@ import "CoreLibs/math"
 local pd = playdate
 local gfx = pd.graphics
 
-import "scripts/Grinder"
-import "scripts/MainMenu"
-import "scripts/BeanChoice"
-import "scripts/TestImage"
+import "scripts/states/Grinder"
+import "scripts/states/MainMenu"
+import "scripts/states/BeanChoice"
+import "scripts/states/TestImage"
+import "scripts/states/OrderState"
 import "scripts/Fonts"
 import "scripts/Product"
 --fonts
@@ -30,6 +31,7 @@ local grinderState = Grinder.new()
 local mainmenuState = MainMenu.new()
 local beanChoiceState = BeanChoice.new()
 local testImageState = TestImage.new()
+local orderState = OrderState.new()
 
 -- local TestImage = gfx.image.new("images/test")
 -- local testSprite = gfx.sprite.new(TestImage)
@@ -37,7 +39,7 @@ local testImageState = TestImage.new()
 -- testSprite:moveTo(200,120)
 -- testSprite:add()
 
-local transitionImage = gfx.image.new("images/transition")
+local transitionImage = gfx.image.new("images/fullBlack")
 local transitionSprite = gfx.sprite.new(transitionImage)
 transitionSprite:setZIndex(100)
 local transitionAnimator
@@ -47,6 +49,7 @@ function pd.update()
     
     grinderState:update()
     beanChoiceState.update()
+    orderState:update()
 
     UpdateCoroutine(StateSwitchingCoroutine)
 
@@ -102,6 +105,9 @@ end
 
 
 function StartStateSwitch(newState)
+
+    
+
     if StateSwitchingCoroutine == nil or coroutine.status(StateSwitchingCoroutine) == "dead" then     
         StateSwitchingCoroutine = coroutine.create( function()
                                                         SwitchState(newState)
@@ -117,42 +123,36 @@ function SwitchState(newState)
     
     transitionSprite:add()
     transitionAnimator = gfx.animator.new(2000, -160, 400, pd.easingFunctions.inOutCubic)
+    local stateSwitch = false
 
     while transitionAnimator:ended()==false do
 
         local animatorValue = transitionAnimator:currentValue()
 
         transitionSprite:moveTo(200, animatorValue)
-        local stateSwitch = false
 
         local newStateVariable
         if stateSwitch==false and transitionAnimator:currentValue() >= 120 then
             stateSwitch = true
             --run exitstate function
-            if GameState=="grinder" then
-                grinderState:onStateExit()
-            elseif GameState=="main menu" then
-                mainmenuState:onStateExit()
-            elseif GameState=="bean choice" then
-                beanChoiceState:onStateExit()
-            elseif GameState=="TestImage" then
-                testImageState.onStateExit()
-            end
 
+            if CurrentState ~= nil then
+                CurrentState:onStateExit()
+            end
+            
             --run enter state function
             if newState=="grinder" then
-                grinderState:onStateEnter()
                 newStateVariable = grinderState
             elseif newState=="main menu" then
-                mainmenuState:onStateEnter()
                 newStateVariable = mainmenuState
             elseif newState=="bean choice" then
-                beanChoiceState:onStateEnter()
                 newStateVariable = beanChoiceState
             elseif newState=="TestImage" then
-                testImageState.onStateEnter()
                 newStateVariable = testImageState
+            elseif newState=="order" then
+                newStateVariable = orderState
             end
+            newStateVariable:onStateEnter()
 
             GameState = newState
             CurrentState = newStateVariable
@@ -189,26 +189,27 @@ function ShakeSprite(sprite, duration)
     sprite:moveTo(originalPosX, originalPosY)
 end
 
-function MoveSprite(sprite, targetX, targetY, speed)
-
-    local startPosX = sprite.x
-    local startPosY = sprite.y
-
+function MoveSprite(sprite, startX, startY, targetX, targetY, speed)
+    local startPosX = startX
+    local startPosY = startY
+    sprite:moveTo(startPosX, startPosY)
     local transition = 0;
+    print(transition)
 
     while transition < 1 do
-        transition = math.min(transition + speed, 1.0)      
+        transition = transition + speed      
 
        -- Move the sprite.
        -- You can also easily replace lerp with one of the easingFunctions.
        sprite:moveTo(
-            playdate.math.lerp(startPosX, targetX, transition), 
-            playdate.math.lerp(startPosY, targetY, transition)
+            playdate.math.lerp(sprite.x, targetX, transition), 
+            playdate.math.lerp(sprite.y, targetY, transition)
        )
+       print(transition)
        coroutine.yield()
     end
 end
 
 StateSwitchingCoroutine = coroutine.create( function() 
-                                                SwitchState("grinder")  
+                                                SwitchState("order")  
                                                 end)

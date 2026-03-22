@@ -3,7 +3,7 @@ import "CoreLibs/sprites"
 import "CoreLibs/timer"
 import "CoreLibs/math"
 
-import "CoroutineManager"
+import "../CoroutineManager"
 
    TestImage = {}
 
