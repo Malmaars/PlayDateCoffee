@@ -3,6 +3,7 @@ import "CoreLibs/sprites"
 import "CoreLibs/timer"
 import "CoreLibs/math"
 import "CoreLibs/animation"
+import "CoreLibs/ui"
 
 import "../CoroutineManager"
 
@@ -22,7 +23,7 @@ import "../CoroutineManager"
 
     local allMySprites
     local performanceTimer
-    local correctlyHitGrinds
+    local correctlyHitGrinds = 0
 
 
     function Grinder.new()
@@ -199,6 +200,9 @@ import "../CoroutineManager"
         correctlyHitGrinds = 0
     end
     function Grinder:DrawAfterSprites()
+        if pd.isCrankDocked() then
+            pd.ui.crankIndicator:draw(0,0)
+        end
     end
     function Grinder:OnDownButtonDown()
         StartStateSwitch("bean choice")

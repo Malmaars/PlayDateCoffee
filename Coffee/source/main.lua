@@ -46,10 +46,9 @@ local transitionAnimator
 local currentProduct
 
 function pd.update()
-    
-    grinderState:update()
-    beanChoiceState.update()
-    orderState:update()
+    if CurrentState ~= nil then
+        CurrentState:update()
+    end
 
     UpdateCoroutine(StateSwitchingCoroutine)
 
@@ -215,6 +214,10 @@ function MoveSprite(sprite, startX, startY, targetX, targetY, speed, parentSprit
     end
 end
 
+function ShowButtonPrompt(inputType, promptText)
+    
+end
+
 StateSwitchingCoroutine = coroutine.create( function() 
-                                                SwitchState("order")  
+                                                SwitchState("bean choice")  
                                                 end)

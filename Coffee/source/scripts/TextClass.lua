@@ -11,12 +11,16 @@ local gfx = pd.graphics
 
 TextClass = {}
 
-function TextClass:new(textString, x, y, z, font)
+function TextClass:new(textString, x, y, z, font, alignment)
     local o = {}   
     setmetatable(o, self)
     o.MyImage = gfx.imageWithText(textString, 400,240, gfx.kColorClear, nil, nil, kTextAlignment.left, font)
     o.MyTextSprite = gfx.sprite.new(o.MyImage)
-    o.MyTextSprite:setCenter(0, 0.5)
+    if alignment ~= nil and alignment == "left" then
+        o.MyTextSprite:setCenter(0, 0.5)
+    else
+        o.MyTextSprite:setCenter(0.5,0.5)
+    end
     o.MyTextSprite:setZIndex(z)
     o.MyTextSprite:moveTo(x,y)
     o.myText = textString

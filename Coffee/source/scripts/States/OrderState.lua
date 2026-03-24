@@ -15,12 +15,15 @@ import "../Receipt"
 
     local customerMoveInCoroutine
     local printReceiptCoroutine
+
+    local currentOrderState
     --1. Customer walks in
     --2. Customer lists what they want,
     --3. You get the receipt With the order
 
     function OrderState.new()
         local self = setmetatable({}, OrderState)    
+
 
         self.backgroundImage = gfx.image.new("images/fullBlack")
         self.backgroundSprite = gfx.sprite.new(self.backgroundImage)
@@ -31,6 +34,27 @@ import "../Receipt"
         self.orderTableSprite = gfx.sprite.new(self.orderTableImage)
         self.orderTableSprite:setZIndex(2)
         self.orderTableSprite:moveTo(200,120)
+
+        self.speechBubbleImage = gfx.image.new("images/SpeechBubble")
+        self.speechBubbleSprite = gfx.sprite.new(self.speechBubbleImage)
+        self.speechBubbleSprite:setZIndex(2)
+        self.speechBubbleSprite:moveTo(200,80)
+
+        self.speechBubbleAnimationImage = gfx.imagetable.new("images/SpeechBubbleAnimation")
+        self.speechBubbleAnimationLoop = gfx.animation.loop.new(20, self.speechBubbleAnimationImage, false)
+
+        self.removeSpeechBubbleAnimationImage = gfx.imagetable.new("images/RemoveSpeechBubbleAnimation")
+        self.removeSpeechBubbleAnimationLoop = gfx.animation.loop.new(20, self.removeSpeechBubbleAnimationImage, false)
+        self.removeSpeechBubbleAnimationSprite = gfx.sprite.new(self.removeSpeechBubbleAnimationLoop:image())
+        self.removeSpeechBubbleAnimationSprite:setZIndex(2)
+        self.removeSpeechBubbleAnimationSprite:moveTo(200,80)
+
+
+        self.speechBubbleAnimationSprite = gfx.sprite.new(self.speechBubbleAnimationLoop:image())
+        self.speechBubbleAnimationSprite:setZIndex(2)
+        self.speechBubbleAnimationSprite:moveTo(200,80)
+
+        self.speechBubbleActive = false;
 
         self.cashRegisterImage = gfx.image.new("images/CashRegister")
         self.cashRegisterTableSprite = gfx.sprite.new(self.cashRegisterImage)
@@ -47,7 +71,8 @@ import "../Receipt"
         self.smallReceiptSprite:setZIndex(3)
         self.smallReceiptSprite:moveTo(313,150)    
 
-        self.bigReceipt = Receipt:new(300, -120, 6)
+        self.bigReceipt = Receipt:new(300, 120, 6)
+
 
         allMySprites = {self.backgroundSprite, self.orderTableSprite, self.cashRegisterTableSprite, self.customerSprite, 
                         self.smallReceiptSprite, self.bigReceipt}
@@ -57,6 +82,9 @@ import "../Receipt"
     function OrderState:update()
         UpdateCoroutine(customerMoveInCoroutine)
         UpdateCoroutine(printReceiptCoroutine)
+
+        self.speechBubbleAnimationSprite:setImage(self.speechBubbleAnimationLoop:image())
+        self.removeSpeechBubbleAnimationSprite:setImage(self.removeSpeechBubbleAnimationLoop:image())
     end
 
     function OrderState:DrawAfterSprites()
@@ -75,8 +103,25 @@ import "../Receipt"
                                                                 self:PrintReceipt()
                                                                 end)
         end
+
+        --go to the next state
     end
     function OrderState:OnBButtonDown()
+        if self.speechBubbleActive == true then
+            self.speechBubbleActive = false
+            self.removeSpeechBubbleAnimationLoop.frame = 1;
+            self.speechBubbleAnimationSprite:remove()
+            self.removeSpeechBubbleAnimationSprite:add()
+        else
+            self.speechBubbleActive = true
+            self.speechBubbleAnimationLoop.frame = 1
+            self.speechBubbleAnimationSprite:add()
+            self.removeSpeechBubbleAnimationSprite:remove()
+        end
+    end
+
+    function OrderState:CustomerTalks()
+
     end
     
     function OrderState:PrintReceipt()
@@ -138,14 +183,14 @@ import "../Receipt"
 
     function OrderState:onStateEnter()
         customerMoveInCoroutine = coroutine.create(  function()
-                                                        MoveSprite(self.customerSprite, -100, 150, 100, 150, 0.01)
+                                                        MoveSprite(self.customerSprite, -100, 150, 80, 150, 0.01)
                                                     end)
 
         for _, mySprite in pairs(allMySprites) do
             mySprite:add()
         end
         self.bigReceipt:moveTo(300,-120)        
-
+        self.speechBubbleSprite:remove()
     end
     
     function OrderState.__index(tab, key)
