@@ -23,6 +23,9 @@ import "CoroutineManager"
         allMySprites = {self.backgroundSprite}
       return self
     end
+
+    function StateExample:update()
+    end
     function StateExample:DrawAfterSprites()
     end
     function StateExample:OnDownButtonDown()

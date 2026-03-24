@@ -24,6 +24,8 @@ import "../CoroutineManager"
       return self
     end
     
+    function TestImage:update()
+    end
     function TestImage:DrawAfterSprites()
     end
     function TestImage:OnDownButtonDown()

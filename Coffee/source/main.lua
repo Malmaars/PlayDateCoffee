@@ -11,6 +11,7 @@ import "scripts/states/MainMenu"
 import "scripts/states/BeanChoice"
 import "scripts/states/TestImage"
 import "scripts/states/OrderState"
+import "scripts/states/PistonState"
 import "scripts/Fonts"
 import "scripts/Product"
 --fonts
@@ -32,6 +33,7 @@ local mainmenuState = MainMenu.new()
 local beanChoiceState = BeanChoice.new()
 local testImageState = TestImage.new()
 local orderState = OrderState.new()
+local piston = PistonState.new()
 
 -- local TestImage = gfx.image.new("images/test")
 -- local testSprite = gfx.sprite.new(TestImage)
@@ -148,6 +150,8 @@ function SwitchState(newState)
                 newStateVariable = beanChoiceState
             elseif newState=="TestImage" then
                 newStateVariable = testImageState
+            elseif newState=="piston" then
+                newStateVariable = piston
             elseif newState=="order" then
                 newStateVariable = orderState
             end
@@ -219,5 +223,5 @@ function ShowButtonPrompt(inputType, promptText)
 end
 
 StateSwitchingCoroutine = coroutine.create( function() 
-                                                SwitchState("grinder")  
+                                                SwitchState("piston")  
                                                 end)

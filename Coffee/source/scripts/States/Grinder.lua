@@ -25,6 +25,12 @@ import "../CoroutineManager"
     local performanceTimer
     local correctlyHitGrinds = 0
 
+    local emptySquares
+    local squareCompletionanimationLoops
+    local squareCompletionanimations
+    local completedSquares
+    local perfectSquares
+
 
     function Grinder.new()
         local self = setmetatable({}, Grinder)    
@@ -35,52 +41,168 @@ import "../CoroutineManager"
         self.grinderSprite = playdate.graphics.sprite.new(self.mp)
         self.grinderSprite:moveTo(120,120)
 
-        self.backgroundImage = gfx.image.new("images/fullBlack")
-        self.backgroundSprite = gfx.sprite.new(self.backgroundImage)
+        local backgroundImage = gfx.image.new("images/fullBlack")
+        self.backgroundSprite = gfx.sprite.new(backgroundImage)
         self.backgroundSprite:setZIndex(-2)
         self.backgroundSprite:moveTo(200,120)
 
-        self.BarImage = gfx.image.new("images/FillBar")
-        self.BarSprite = gfx.sprite.new(self.BarImage)
+        local BarImage = gfx.image.new("images/FillBar")
+        self.BarSprite = gfx.sprite.new(BarImage)
         self.BarSprite:setZIndex(1)
         self.BarSprite:moveTo(340, 120)
         
-        self.BarAlignImage = gfx.image.new("images/BarAlign")
-        self.BarAlignSprite = gfx.sprite.new(self.BarAlignImage)
+        local BarAlignImage = gfx.image.new("images/BarAlign")
+        self.BarAlignSprite = gfx.sprite.new(BarAlignImage)
         self.BarAlignSprite:setZIndex(2)
         self.BarAlignSprite:moveTo(340,120)
 
-        self.cursorImage = gfx.image.new("images/cursor")
-        self.cursorSprite = gfx.sprite.new(self.cursorImage)
+        local cursorImage = gfx.image.new("images/cursor")
+        self.cursorSprite = gfx.sprite.new(cursorImage)
         self.cursorSprite:setZIndex(2)
-        self.cursorSprite:moveTo(380,120)
+        self.cursorSprite:moveTo(380,220)
 
-        self.perfectAnimationImage = gfx.imagetable.new("images/perfect")
-        self.perfectAnimationLoop = gfx.animation.loop.new(40, self.perfectAnimationImage, false)
+        local perfectAnimationImage = gfx.imagetable.new("images/perfect")
+        self.perfectAnimationLoop = gfx.animation.loop.new(40, perfectAnimationImage, false)
         self.perfectAnimationSprite = gfx.sprite.new(self.perfectAnimationLoop:image())
         self.perfectAnimationSprite:setZIndex(6)
         self.perfectAnimationSprite:moveTo(260,120)
 
-        self.greatAnimationImage = gfx.imagetable.new("images/great")
-        self.greatAnimationLoop = gfx.animation.loop.new(40, self.greatAnimationImage, false)
+        local greatAnimationImage = gfx.imagetable.new("images/great")
+        self.greatAnimationLoop = gfx.animation.loop.new(40, greatAnimationImage, false)
         self.greatAnimationSprite = gfx.sprite.new(self.greatAnimationLoop:image())
         self.greatAnimationSprite:setZIndex(6)
         self.greatAnimationSprite:moveTo(260,120)
 
-        self.fasterAnimationImage = gfx.imagetable.new("images/faster")
-        self.fasterAnimationLoop = gfx.animation.loop.new(40, self.fasterAnimationImage, false)
+        local fasterAnimationImage = gfx.imagetable.new("images/faster")
+        self.fasterAnimationLoop = gfx.animation.loop.new(40, fasterAnimationImage, false)
         self.fasterAnimationSprite = gfx.sprite.new(self.fasterAnimationLoop:image())
         self.fasterAnimationSprite:setZIndex(6)
         self.fasterAnimationSprite:moveTo(260,120)
 
-        self.slowerAnimationImage = gfx.imagetable.new("images/slower")
-        self.slowerAnimationLoop = gfx.animation.loop.new(40, self.slowerAnimationImage, false)
+        local slowerAnimationImage = gfx.imagetable.new("images/slower")
+        self.slowerAnimationLoop = gfx.animation.loop.new(40, slowerAnimationImage, false)
         self.slowerAnimationSprite = gfx.sprite.new(self.slowerAnimationLoop:image())
         self.slowerAnimationSprite:setZIndex(6)
         self.slowerAnimationSprite:moveTo(260,120)
 
         performanceTimer = pd.timer.new(700, function() CheckGrinderHit(self, performanceTimer) end)
 
+        --this seems inefficient, but keep in mind that this took me literally 10 seconds, doesn't get more efficient than that
+        local emptySquareImage = gfx.image.new("images/SmallSquareEmpty")
+        emptySquares = {gfx.sprite.new(emptySquareImage),
+                        gfx.sprite.new(emptySquareImage),
+                        gfx.sprite.new(emptySquareImage),
+                        gfx.sprite.new(emptySquareImage),
+                        gfx.sprite.new(emptySquareImage),
+                        gfx.sprite.new(emptySquareImage),
+                        gfx.sprite.new(emptySquareImage),
+                        gfx.sprite.new(emptySquareImage),
+                        gfx.sprite.new(emptySquareImage),
+                        gfx.sprite.new(emptySquareImage),
+                        gfx.sprite.new(emptySquareImage),
+                        gfx.sprite.new(emptySquareImage),
+                        gfx.sprite.new(emptySquareImage),
+                        gfx.sprite.new(emptySquareImage),
+                        gfx.sprite.new(emptySquareImage),
+                        gfx.sprite.new(emptySquareImage),
+                        gfx.sprite.new(emptySquareImage),
+                        gfx.sprite.new(emptySquareImage),
+                        }
+
+        local filledSquareImage = gfx.image.new("images/SmallSquareFilled")
+        completedSquares = {gfx.sprite.new(filledSquareImage),
+                        gfx.sprite.new(filledSquareImage),
+                        gfx.sprite.new(filledSquareImage),
+                        gfx.sprite.new(filledSquareImage),
+                        gfx.sprite.new(filledSquareImage),
+                        gfx.sprite.new(filledSquareImage),
+                        gfx.sprite.new(filledSquareImage),
+                        gfx.sprite.new(filledSquareImage),
+                        gfx.sprite.new(filledSquareImage),
+                        gfx.sprite.new(filledSquareImage),
+                        gfx.sprite.new(filledSquareImage),
+                        gfx.sprite.new(filledSquareImage),
+                        gfx.sprite.new(filledSquareImage),
+                        gfx.sprite.new(filledSquareImage),
+                        gfx.sprite.new(filledSquareImage),
+                        gfx.sprite.new(filledSquareImage),
+                        gfx.sprite.new(filledSquareImage),
+                        gfx.sprite.new(filledSquareImage),
+                        }
+        
+        local perfectSquareImage = gfx.image.new("images/SmallSquarePerfect")
+        perfectSquares = {gfx.sprite.new(perfectSquareImage),
+                        gfx.sprite.new(perfectSquareImage),
+                        gfx.sprite.new(perfectSquareImage),
+                        gfx.sprite.new(perfectSquareImage),
+                        gfx.sprite.new(perfectSquareImage),
+                        gfx.sprite.new(perfectSquareImage),
+                        gfx.sprite.new(perfectSquareImage),
+                        gfx.sprite.new(perfectSquareImage),
+                        gfx.sprite.new(perfectSquareImage),
+                        gfx.sprite.new(perfectSquareImage),
+                        gfx.sprite.new(perfectSquareImage),
+                        gfx.sprite.new(perfectSquareImage),
+                        gfx.sprite.new(perfectSquareImage),
+                        gfx.sprite.new(perfectSquareImage),
+                        gfx.sprite.new(perfectSquareImage),
+                        gfx.sprite.new(perfectSquareImage),
+                        gfx.sprite.new(perfectSquareImage),
+                        gfx.sprite.new(perfectSquareImage),
+                        }
+        
+        local squareCompletionAnimationImage = gfx.imagetable.new("images/SmallSquareFillAnimation")
+        local squareCompleteAnimSpeed = 40
+        squareCompletionanimationLoops = {  gfx.animation.loop.new(squareCompleteAnimSpeed, squareCompletionAnimationImage, false),
+                                            gfx.animation.loop.new(squareCompleteAnimSpeed, squareCompletionAnimationImage, false),
+                                            gfx.animation.loop.new(squareCompleteAnimSpeed, squareCompletionAnimationImage, false),
+                                            gfx.animation.loop.new(squareCompleteAnimSpeed, squareCompletionAnimationImage, false),
+                                            gfx.animation.loop.new(squareCompleteAnimSpeed, squareCompletionAnimationImage, false),
+                                            gfx.animation.loop.new(squareCompleteAnimSpeed, squareCompletionAnimationImage, false),
+                                            gfx.animation.loop.new(squareCompleteAnimSpeed, squareCompletionAnimationImage, false),
+                                            gfx.animation.loop.new(squareCompleteAnimSpeed, squareCompletionAnimationImage, false),
+                                            gfx.animation.loop.new(squareCompleteAnimSpeed, squareCompletionAnimationImage, false),
+                                            gfx.animation.loop.new(squareCompleteAnimSpeed, squareCompletionAnimationImage, false),
+                                            gfx.animation.loop.new(squareCompleteAnimSpeed, squareCompletionAnimationImage, false),
+                                            gfx.animation.loop.new(squareCompleteAnimSpeed, squareCompletionAnimationImage, false),
+                                            gfx.animation.loop.new(squareCompleteAnimSpeed, squareCompletionAnimationImage, false),
+                                            gfx.animation.loop.new(squareCompleteAnimSpeed, squareCompletionAnimationImage, false),
+                                            gfx.animation.loop.new(squareCompleteAnimSpeed, squareCompletionAnimationImage, false),
+                                            gfx.animation.loop.new(squareCompleteAnimSpeed, squareCompletionAnimationImage, false),
+                                            gfx.animation.loop.new(squareCompleteAnimSpeed, squareCompletionAnimationImage, false),
+                                            gfx.animation.loop.new(squareCompleteAnimSpeed, squareCompletionAnimationImage, false)
+
+        }
+        squareCompletionanimations = {  gfx.sprite.new(squareCompletionanimationLoops[1]:image()),
+                                        gfx.sprite.new(squareCompletionanimationLoops[2]:image()),
+                                        gfx.sprite.new(squareCompletionanimationLoops[3]:image()),
+                                        gfx.sprite.new(squareCompletionanimationLoops[4]:image()),
+                                        gfx.sprite.new(squareCompletionanimationLoops[5]:image()),
+                                        gfx.sprite.new(squareCompletionanimationLoops[6]:image()),
+                                        gfx.sprite.new(squareCompletionanimationLoops[7]:image()),
+                                        gfx.sprite.new(squareCompletionanimationLoops[8]:image()),
+                                        gfx.sprite.new(squareCompletionanimationLoops[9]:image()),
+                                        gfx.sprite.new(squareCompletionanimationLoops[10]:image()),
+                                        gfx.sprite.new(squareCompletionanimationLoops[11]:image()),
+                                        gfx.sprite.new(squareCompletionanimationLoops[12]:image()),
+                                        gfx.sprite.new(squareCompletionanimationLoops[13]:image()),
+                                        gfx.sprite.new(squareCompletionanimationLoops[14]:image()),
+                                        gfx.sprite.new(squareCompletionanimationLoops[15]:image()),
+                                        gfx.sprite.new(squareCompletionanimationLoops[16]:image()),
+                                        gfx.sprite.new(squareCompletionanimationLoops[17]:image()),
+                                        gfx.sprite.new(squareCompletionanimationLoops[18]:image()),
+    }
+
+        for i = 1,18,1 do
+            emptySquares[i]:moveTo(317, 213 - ((i - 1) * 11))
+            emptySquares[i]:setZIndex(1)
+            completedSquares[i]:moveTo(317, 213 - ((i - 1) * 11))
+            completedSquares[i]:setZIndex(1)
+            perfectSquares[i]:moveTo(317, 213 - ((i - 1) * 11))
+            perfectSquares[i]:setZIndex(2)
+            squareCompletionanimations[i]:moveTo(317, 213 - ((i - 1) * 11))
+            squareCompletionanimations[i]:setZIndex(1)
+        end
         allMySprites = {self.grinderSprite, self.backgroundSprite, self.BarSprite, self.BarAlignSprite, self.cursorSprite, 
                         self.perfectAnimationSprite, self.greatAnimationSprite, self.fasterAnimationSprite, self.slowerAnimationSprite}
       return self
@@ -101,6 +223,10 @@ import "../CoroutineManager"
         self.greatAnimationSprite:setImage(self.greatAnimationLoop:image())
         self.slowerAnimationSprite:setImage(self.slowerAnimationLoop:image())
         self.fasterAnimationSprite:setImage(self.fasterAnimationLoop:image())
+
+        for i = 1,18,1 do
+            squareCompletionanimations[i]:setImage(squareCompletionanimationLoops[i]:image())
+        end
     end
 
     function Grinder:AnimateGrinder()
@@ -125,7 +251,7 @@ import "../CoroutineManager"
         end
             self.grinderSprite:setImage(self.grinder:getImage(grinderTableIndex))    
 
-            if currentGrinderIndex ~= grinderTableIndex and (grinderShakeCoroutine == nil or coroutine.status(grinderShakeCoroutine) == "dead") and (moveUpCoroutine == nil or coroutine.status(moveUpCoroutine) == "dead") and (moveDownCoroutine == nil or coroutine.status(moveDownCoroutine) == "dead") then
+            if correctlyHitGrinds < 18 and currentGrinderIndex ~= grinderTableIndex and (grinderShakeCoroutine == nil or coroutine.status(grinderShakeCoroutine) == "dead") and (moveUpCoroutine == nil or coroutine.status(moveUpCoroutine) == "dead") and (moveDownCoroutine == nil or coroutine.status(moveDownCoroutine) == "dead") then
                 grinderShakeCoroutine = coroutine.create(   function()
                                                                 ShakeSprite(self.grinderSprite, 500)
                                                              end)
@@ -159,12 +285,24 @@ import "../CoroutineManager"
     end
 
     function CheckGrinderHit(grinder, timer)
+        if correctlyHitGrinds >= 18 then
+            return
+        end
         if grinder.cursorSprite.y >= 119 and grinder.cursorSprite.y <= 121 then
             grinder.perfectAnimationLoop.frame = 1
             correctlyHitGrinds += 1
+            if correctlyHitGrinds <= 18 then
+                completedSquares[correctlyHitGrinds]:add()
+                perfectSquares[correctlyHitGrinds]:add()
+                squareCompletionanimationLoops[correctlyHitGrinds].frame = 1
+            end
         elseif (grinder.cursorSprite.y > 121 and grinder.cursorSprite.y <= 132) or (grinder.cursorSprite.y < 119 and grinder.cursorSprite.y >= 108) then
             grinder.greatAnimationLoop.frame = 1
             correctlyHitGrinds += 1
+            if correctlyHitGrinds <= 18 then
+                completedSquares[correctlyHitGrinds]:add()
+                squareCompletionanimationLoops[correctlyHitGrinds].frame = 1
+            end
         elseif grinder.cursorSprite.y < 108 then
             grinder.slowerAnimationLoop.frame = 1
         elseif grinder.cursorSprite.y > 132 then
@@ -184,6 +322,13 @@ import "../CoroutineManager"
         for _, mySprite in pairs(allMySprites) do
             mySprite:remove()
         end
+
+        for i = 1,18,1 do
+            emptySquares[i]:remove()
+            completedSquares[i]:remove()
+            perfectSquares[i]:remove()
+            squareCompletionanimations[i]:remove()
+        end
     end
 
     function Grinder:onStateEnter()
@@ -196,8 +341,15 @@ import "../CoroutineManager"
         for _, mySprite in pairs(allMySprites) do
             mySprite:add()
         end
+        for i = 1,18,1 do
+            emptySquares[i]:add()
+            squareCompletionanimations[i]:add()
+        end
+        self:ResetData()
+    end
 
-        correctlyHitGrinds = 0
+    function Grinder:ResetData()
+        correctlyHitGrinds = 0    
     end
     function Grinder:DrawAfterSprites()
         if pd.isCrankDocked() then
