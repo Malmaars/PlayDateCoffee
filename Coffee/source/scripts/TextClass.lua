@@ -11,10 +11,10 @@ local gfx = pd.graphics
 
 TextClass = {}
 
-function TextClass:new(textString, x, y, z)
+function TextClass:new(textString, x, y, z, font)
     local o = {}   
     setmetatable(o, self)
-    o.MyImage = gfx.imageWithText(textString, 400,240, gfx.kColorClear, nil, nil, kTextAlignment.left, FontAmmolite)
+    o.MyImage = gfx.imageWithText(textString, 400,240, gfx.kColorClear, nil, nil, kTextAlignment.left, font)
     o.MyTextSprite = gfx.sprite.new(o.MyImage)
     o.MyTextSprite:setCenter(0, 0.5)
     o.MyTextSprite:setZIndex(z)
@@ -31,6 +31,10 @@ function TextClass:SetNewLocation(x, y)
     self.targetYLocation = y
 end
 
+function TextClass:moveTo(x,y)
+    self.MyTextSprite:moveTo(x,y)
+end
+
 
 function TextClass:update()
 end 
@@ -38,11 +42,11 @@ end
 function TextClass:Draw()
 end
 
-function TextClass:activate()
+function TextClass:add()
     self.MyTextSprite:add()
 end
 
-function TextClass:destroy()
+function TextClass:remove()
     self.MyTextSprite:remove()
 end
 

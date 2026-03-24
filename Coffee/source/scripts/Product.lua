@@ -8,6 +8,9 @@ import "CoreLibs/math"
 Product = {}
 
 local myCoffeeBeans
+local aroma
+local acidity
+local body
 local myFluidType
 local myCupType
 

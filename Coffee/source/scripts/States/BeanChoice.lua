@@ -6,6 +6,7 @@ import "../CoffeeBag"
 import "../CoffeeBean"
 import "../MapPin"
 import "../TextClass"
+import "../Fonts"
 
 local pd = playdate
 local gfx = pd.graphics
@@ -68,17 +69,17 @@ function BeanChoice.new()
     self.AcidityBarSprite = playdate.graphics.sprite.new(self.barMP)
     self.AcidityBarSprite:setZIndex(5)
     self.AcidityBarSprite:moveTo(165, 38)
-    self.AcidityBarText = TextClass:new("ACIDITY", 102, 22, 5)
+    self.AcidityBarText = TextClass:new("ACIDITY", 102, 22, 5, FontAmmolite)
     
     self.AromaBarSprite = playdate.graphics.sprite.new(self.barMP)
     self.AromaBarSprite:setZIndex(5)
     self.AromaBarSprite:moveTo(165, 73)
-    self.AromaBarText = TextClass:new("AROMA", 102, 57, 5)
+    self.AromaBarText = TextClass:new("AROMA", 102, 57, 5, FontAmmolite)
     
     self.BodyBarSprite = playdate.graphics.sprite.new(self.barMP)
     self.BodyBarSprite:setZIndex(5)
     self.BodyBarSprite:moveTo(165, 108)
-    self.BodyBarText = TextClass:new("BODY", 102, 92, 5)
+    self.BodyBarText = TextClass:new("BODY", 102, 92, 5, FontAmmolite)
 
 
     self:ChangeDataVisual(coffeeBags[10])

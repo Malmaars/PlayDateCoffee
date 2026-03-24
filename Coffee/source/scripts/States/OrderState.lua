@@ -4,6 +4,7 @@ import "CoreLibs/timer"
 import "CoreLibs/math"
 
 import "../CoroutineManager"
+import "../Receipt"
 
    OrderState = {}
 
@@ -13,6 +14,7 @@ import "../CoroutineManager"
     local allMySprites
 
     local customerMoveInCoroutine
+    local printReceiptCoroutine
     --1. Customer walks in
     --2. Customer lists what they want,
     --3. You get the receipt With the order
@@ -38,14 +40,23 @@ import "../CoroutineManager"
         self.customerImage = gfx.image.new("images/Customer")
         self.customerSprite = gfx.sprite.new(self.customerImage)
         self.customerSprite:setZIndex(1)
-        self.customerSprite:moveTo(100,152)        
+        self.customerSprite:moveTo(100,152)   
 
-        allMySprites = {self.backgroundSprite, self.orderTableSprite, self.cashRegisterTableSprite, self.customerSprite}
+        self.smallReceiptImage = gfx.image.new("images/SmallReceipt")
+        self.smallReceiptSprite = gfx.sprite.new(self.smallReceiptImage)
+        self.smallReceiptSprite:setZIndex(3)
+        self.smallReceiptSprite:moveTo(313,150)    
+
+        self.bigReceipt = Receipt:new(300, -120, 6)
+
+        allMySprites = {self.backgroundSprite, self.orderTableSprite, self.cashRegisterTableSprite, self.customerSprite, 
+                        self.smallReceiptSprite, self.bigReceipt}
       return self
     end
 
     function OrderState:update()
         UpdateCoroutine(customerMoveInCoroutine)
+        UpdateCoroutine(printReceiptCoroutine)
     end
 
     function OrderState:DrawAfterSprites()
@@ -59,9 +70,65 @@ import "../CoroutineManager"
     function OrderState:OnRightButtonDown()
     end
     function OrderState:OnAButtonDown()
+        if printReceiptCoroutine == nil or coroutine.status(printReceiptCoroutine) == "dead" then
+            printReceiptCoroutine = coroutine.create(  function()
+                                                                self:PrintReceipt()
+                                                                end)
+        end
     end
     function OrderState:OnBButtonDown()
-    end  
+    end
+    
+    function OrderState:PrintReceipt()
+        --set the small and large receipt at the starting positions
+        self.smallReceiptSprite:moveTo(313,150)
+        self.bigReceipt:moveTo(300, -120)
+        print("printing receipt")
+        --move the small receipt up
+        --Y: 115, then 110, then 100
+        local currentCoroutine = coroutine.create(  function()
+                                                        MoveSprite(self.smallReceiptSprite, 313, 150, 313, 115, 0.05, false)
+                                                    end)
+        while currentCoroutine ~= nil and coroutine.status(currentCoroutine) ~= "dead" do
+            UpdateCoroutine(currentCoroutine)
+            coroutine.yield()
+        end
+        local currentCoroutine = coroutine.create(  function()
+                                                        MoveSprite(self.smallReceiptSprite, 313, 115, 313, 108, 0.05, false)
+                                                    end)
+        while currentCoroutine ~= nil and coroutine.status(currentCoroutine) ~= "dead" do
+            UpdateCoroutine(currentCoroutine)
+            coroutine.yield()
+        end
+        local currentCoroutine = coroutine.create(  function()
+                                                        MoveSprite(self.smallReceiptSprite, 313, 110, 313, 100, 0.05, false)
+                                                    end)
+        
+        while currentCoroutine ~= nil and coroutine.status(currentCoroutine) ~= "dead" do
+            UpdateCoroutine(currentCoroutine)
+            coroutine.yield()
+        end
+        local currentCoroutine = coroutine.create(  function()
+                                                        MoveSprite(self.smallReceiptSprite, 313, 100, 313, -150, 0.05, false)
+                                                    end)
+        
+        while currentCoroutine ~= nil and coroutine.status(currentCoroutine) ~= "dead" do
+            UpdateCoroutine(currentCoroutine)
+            coroutine.yield()
+        end
+        
+        local currentCoroutine = coroutine.create(  function()
+                                                        MoveSprite(self.bigReceipt, 300, -120, 300, 120, 0.05, true)
+                                                    end)
+        
+        while currentCoroutine ~= nil and coroutine.status(currentCoroutine) ~= "dead" do
+            UpdateCoroutine(currentCoroutine)
+            coroutine.yield()
+        end
+
+        --move the large receipt down
+        --start: (300, -120) destination: (300,120)
+    end
     
     function OrderState:onStateExit()
         for _, mySprite in pairs(allMySprites) do
@@ -71,12 +138,13 @@ import "../CoroutineManager"
 
     function OrderState:onStateEnter()
         customerMoveInCoroutine = coroutine.create(  function()
-                                                        MoveSprite(self.customerSprite, -100, 150, 100, 150, 0.005)
+                                                        MoveSprite(self.customerSprite, -100, 150, 100, 150, 0.01)
                                                     end)
 
         for _, mySprite in pairs(allMySprites) do
             mySprite:add()
         end
+        self.bigReceipt:moveTo(300,-120)        
 
     end
     

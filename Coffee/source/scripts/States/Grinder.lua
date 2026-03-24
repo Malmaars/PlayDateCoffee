@@ -178,7 +178,7 @@ import "../CoroutineManager"
             coroutine.close(moveUpCoroutine)
         end
         moveDownCoroutine = coroutine.create(  function()
-                                                        MoveSprite(self.grinderSprite, self.grinderSprite.x, self.grinderSprite.y, 140, 360, 0.05)
+                                                        MoveSprite(self.grinderSprite, self.grinderSprite.x, self.grinderSprite.y, 140, 360, 0.05, false)
                                                     end)
         for _, mySprite in pairs(allMySprites) do
             mySprite:remove()
@@ -190,7 +190,7 @@ import "../CoroutineManager"
             coroutine.close(moveDownCoroutine)
         end
         moveUpCoroutine = coroutine.create(  function()
-                                                        MoveSprite(self.grinderSprite, 140, 400, 140, 130, 0.05)
+                                                        MoveSprite(self.grinderSprite, 140, 400, 140, 130, 0.05, false)
                                                     end)
         for _, mySprite in pairs(allMySprites) do
             mySprite:add()

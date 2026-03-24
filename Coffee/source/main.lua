@@ -189,23 +189,28 @@ function ShakeSprite(sprite, duration)
     sprite:moveTo(originalPosX, originalPosY)
 end
 
-function MoveSprite(sprite, startX, startY, targetX, targetY, speed)
+function MoveSprite(sprite, startX, startY, targetX, targetY, speed, parentSprite)
     local startPosX = startX
     local startPosY = startY
     sprite:moveTo(startPosX, startPosY)
     local transition = 0;
-    print(transition)
 
     while transition < 1 do
         transition = transition + speed      
 
        -- Move the sprite.
        -- You can also easily replace lerp with one of the easingFunctions.
+       if parentSprite ~= nil and parentSprite == true then
+        sprite:moveTo(
+            playdate.math.lerp(sprite.mySprite.x, targetX, transition), 
+            playdate.math.lerp(sprite.mySprite.y, targetY, transition)
+       )
+       else
        sprite:moveTo(
             playdate.math.lerp(sprite.x, targetX, transition), 
             playdate.math.lerp(sprite.y, targetY, transition)
        )
-       print(transition)
+       end
        coroutine.yield()
     end
 end
