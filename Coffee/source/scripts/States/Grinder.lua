@@ -125,7 +125,7 @@ import "../CoroutineManager"
         end
             self.grinderSprite:setImage(self.grinder:getImage(grinderTableIndex))    
 
-            if currentGrinderIndex ~= grinderTableIndex and (grinderShakeCoroutine == nil or coroutine.status(grinderShakeCoroutine) == "dead") and coroutine.status(moveUpCoroutine) == "dead" and coroutine.status(moveDownCoroutine) == "dead" then
+            if currentGrinderIndex ~= grinderTableIndex and (grinderShakeCoroutine == nil or coroutine.status(grinderShakeCoroutine) == "dead") and (moveUpCoroutine == nil or coroutine.status(moveUpCoroutine) == "dead") and (moveDownCoroutine == nil or coroutine.status(moveDownCoroutine) == "dead") then
                 grinderShakeCoroutine = coroutine.create(   function()
                                                                 ShakeSprite(self.grinderSprite, 500)
                                                              end)

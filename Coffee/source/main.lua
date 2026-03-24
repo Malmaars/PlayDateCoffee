@@ -219,5 +219,5 @@ function ShowButtonPrompt(inputType, promptText)
 end
 
 StateSwitchingCoroutine = coroutine.create( function() 
-                                                SwitchState("bean choice")  
+                                                SwitchState("grinder")  
                                                 end)

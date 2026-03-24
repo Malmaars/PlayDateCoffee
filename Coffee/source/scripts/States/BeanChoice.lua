@@ -203,7 +203,6 @@ end
 
 function BeanChoice:GetCrankAngle()
     local crankAngle = pd.getCrankPosition()
-
         
     currentCrankAngle = 1;
     if crankAngle > 22.5 and crankAngle <= 67.5 then
@@ -221,8 +220,6 @@ function BeanChoice:GetCrankAngle()
     elseif crankAngle > 292.5 and crankAngle <= 337.5 then
         currentCrankAngle = 8
     end
-
-    print(currentCrankAngle)
 end
 
 function BeanChoice:onStateExit()
