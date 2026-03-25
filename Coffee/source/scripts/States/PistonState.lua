@@ -39,7 +39,7 @@ import "../CoroutineManager"
         self.espressoMachineSprite:moveTo(200,120)
 
         local PistonClickImage = gfx.imagetable.new("images/PistonClickIn")
-        self.pistonClickLoop = gfx.animation.loop.new(5, PistonClickImage, false)
+        self.pistonClickLoop = gfx.animation.loop.new(20, PistonClickImage, false)
         self.pistonClickSprite = gfx.sprite.new(self.pistonClickLoop:image())
         self.pistonClickSprite:setZIndex(6)
         self.pistonClickSprite:moveTo(200,120)
