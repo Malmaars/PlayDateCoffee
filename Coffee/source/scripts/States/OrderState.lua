@@ -122,6 +122,12 @@ import "../Receipt"
         end
     end
 
+    function OrderState:OnAButtonUp()
+    end
+    function OrderState:OnBButtonUp()
+    end  
+    
+
     function OrderState:CustomerTalks()
 
     end

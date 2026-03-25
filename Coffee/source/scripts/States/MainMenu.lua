@@ -24,7 +24,10 @@ function MainMenu:OnAButtonDown()
 end
 function MainMenu:OnBButtonDown()
 end  
-
+function MainMenu:OnAButtonUp()
+end
+function MainMenu:OnBButtonUp()
+end 
 function MainMenu:onStateExit()
 end
 

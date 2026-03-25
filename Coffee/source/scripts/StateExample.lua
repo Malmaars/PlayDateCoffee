@@ -39,6 +39,10 @@ import "CoroutineManager"
     function StateExample:OnAButtonDown()
     end
     function StateExample:OnBButtonDown()
+    end      
+    function StateExample:OnAButtonUp()
+    end
+    function StateExample:OnBButtonUp()
     end  
     
     function StateExample:onStateExit()

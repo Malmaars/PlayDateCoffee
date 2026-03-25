@@ -201,6 +201,11 @@ end
 
 function BeanChoice:OnBButtonDown()
 end
+function BeanChoice:OnAButtonUp()
+end
+function BeanChoice:OnBButtonUp()
+end  
+    
 
 function BeanChoice:GetCrankAngle()
     local crankAngle = pd.getCrankPosition()

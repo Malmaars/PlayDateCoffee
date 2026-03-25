@@ -31,7 +31,6 @@ import "../CoroutineManager"
         self.mp:setImageTable(self.piston)
         self.pistonSprite = playdate.graphics.sprite.new(self.mp)
         self.pistonSprite:setZIndex(1)
-        self.pistonSprite:moveTo(200,135)
 
         local espressoMachineImage = gfx.image.new("images/EspressoMachine")
         self.espressoMachineSprite = gfx.sprite.new(espressoMachineImage)
@@ -43,7 +42,23 @@ import "../CoroutineManager"
         self.pistonClickSprite = gfx.sprite.new(self.pistonClickLoop:image())
         self.pistonClickSprite:setZIndex(6)
         self.pistonClickSprite:moveTo(200,120)
-        allMySprites = {self.backgroundSprite, self.pistonSprite, self.espressoMachineSprite, self.pistonClickSprite}
+
+        self.buttonImage = gfx.image.new("images/EspressoButton")
+        self.buttonPressedImage = gfx.image.new("images/EspressoButtonPressed")
+
+        self.leftButton = gfx.sprite.new(self.buttonImage)
+        self.leftButton:moveTo(140,67)
+        self.leftButton:setZIndex(6)
+        self.leftButtonText = TextClass:new("B", 140, 68, 7, FontAmmoliteLarge,nil)
+
+
+        self.rightButton = gfx.sprite.new(self.buttonImage)
+        self.rightButton:moveTo(244,67)
+        self.rightButton:setZIndex(6)
+        self.rightButtonText = TextClass:new("A", 244, 67, 7, FontAmmoliteLarge,nil)
+
+        allMySprites = {self.backgroundSprite, self.pistonSprite, self.espressoMachineSprite, self.pistonClickSprite, 
+        self.leftButton, self.leftButtonText, self.rightButton, self.rightButtonText}
       return self
     end
     
@@ -92,8 +107,10 @@ import "../CoroutineManager"
                 currentPistonAngleIndex = 2
             elseif crankAngle <= 180 and currentPistonAngleIndex ~= 14 then--and currentPistonAngleIndex == 2 then
                 currentPistonAngleIndex = 1
-                self.pistonClickLoop.frame = 1
-                pistonClicked = true
+                if pistonLocked == true then
+                    self.pistonClickLoop.frame = 1
+                    pistonClicked = true
+                end
             else
                 currentPistonAngleIndex = 14
             end
@@ -101,7 +118,7 @@ import "../CoroutineManager"
         if pistonLocked == false and currentPistonAngleIndex == lockPosition then
                 -- lock it in, move the sprite up
                 pistonLockCoroutine = coroutine.create(  function()
-                                                MoveSprite(self.pistonSprite, 200, 135, 200, 125, 0.2, false)
+                                                MoveSprite(self.pistonSprite, 200, 145, 200, 133, 0.2, false)
                                             end)
                 pistonLocked = true
             end
@@ -118,14 +135,22 @@ import "../CoroutineManager"
         StartStateSwitch("order")
     end
     function PistonState:OnLeftButtonDown()
+        self:onStateEnter()
     end
     function PistonState:OnRightButtonDown()
     end
     function PistonState:OnAButtonDown()
+        self.rightButton:setImage(self.buttonPressedImage)
     end
     function PistonState:OnBButtonDown()
+        self.leftButton:setImage(self.buttonPressedImage)
     end  
-    
+    function PistonState:OnAButtonUp()
+        self.rightButton:setImage(self.buttonImage)
+    end
+    function PistonState:OnBButtonUp()
+        self.leftButton:setImage(self.buttonImage)
+    end    
     function PistonState:onStateExit()
         for _, mySprite in pairs(allMySprites) do
             mySprite:remove()
@@ -139,8 +164,10 @@ import "../CoroutineManager"
         pistonLocked = false
         lockPosition = math.random(10,13)
         pistonClicked = false
-        self.pistonSprite:moveTo(200,135)
+        self.pistonSprite:moveTo(200,145)
         currentPistonAngleIndex = 14;
+        self.rightButton:setImage(self.buttonImage)
+        self.leftButton:setImage(self.buttonImage)
     end
     
     function PistonState.__index(tab, key)

@@ -68,7 +68,12 @@ end
 function pd.AButtonDown()
     CurrentState:OnAButtonDown()
 end
-
+function pd.AButtonUp()
+    CurrentState:OnAButtonUp()
+end
+function pd.BButtonUp()
+    CurrentState:OnBButtonUp()
+end
 function pd.BButtonDown()
     CurrentState:OnBButtonDown()
 end
@@ -223,5 +228,5 @@ function ShowButtonPrompt(inputType, promptText)
 end
 
 StateSwitchingCoroutine = coroutine.create( function() 
-                                                SwitchState("grinder")  
+                                                SwitchState("piston")  
                                                 end)

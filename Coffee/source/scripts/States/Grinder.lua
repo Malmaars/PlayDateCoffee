@@ -371,6 +371,10 @@ import "../CoroutineManager"
     end
     function Grinder:OnBButtonDown()
     end
+    function Grinder:OnAButtonUp()
+    end
+    function Grinder:OnBButtonUp()
+    end  
 
     function Grinder.__index(tab, key)
         return Grinder[key]
