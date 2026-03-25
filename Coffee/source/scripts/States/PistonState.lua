@@ -112,8 +112,10 @@ import "../CoroutineManager"
 
     end
     function PistonState:OnDownButtonDown()
+        StartStateSwitch("grinder")
     end
     function PistonState:OnUpButtonDown()
+        StartStateSwitch("order")
     end
     function PistonState:OnLeftButtonDown()
     end
@@ -137,6 +139,8 @@ import "../CoroutineManager"
         pistonLocked = false
         lockPosition = math.random(10,13)
         pistonClicked = false
+        self.pistonSprite:moveTo(200,135)
+        currentPistonAngleIndex = 14;
     end
     
     function PistonState.__index(tab, key)

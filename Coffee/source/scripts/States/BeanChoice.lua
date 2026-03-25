@@ -128,9 +128,10 @@ function BeanChoice:DrawAfterSprites()
 end
 
 function BeanChoice:OnDownButtonDown()
+    StartStateSwitch("order")
 end
 function BeanChoice:OnUpButtonDown()
-    StartStateSwitch("bean choice")
+    StartStateSwitch("grinder")
 end
 
 function BeanChoice:OnLeftButtonDown()

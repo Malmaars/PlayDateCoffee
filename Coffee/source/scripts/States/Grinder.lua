@@ -349,7 +349,8 @@ import "../CoroutineManager"
     end
 
     function Grinder:ResetData()
-        correctlyHitGrinds = 0    
+        correctlyHitGrinds = 0 
+        performanceTimer = pd.timer.new(700, function() CheckGrinderHit(self, performanceTimer) end)
     end
     function Grinder:DrawAfterSprites()
         if pd.isCrankDocked() then
@@ -360,6 +361,7 @@ import "../CoroutineManager"
         StartStateSwitch("bean choice")
     end
     function Grinder:OnUpButtonDown()
+        StartStateSwitch("piston")
     end
     function Grinder:OnLeftButtonDown()
     end

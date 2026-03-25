@@ -90,8 +90,10 @@ import "../Receipt"
     function OrderState:DrawAfterSprites()
     end
     function OrderState:OnDownButtonDown()
+        StartStateSwitch("piston")
     end
     function OrderState:OnUpButtonDown()
+        StartStateSwitch("bean choice")
     end
     function OrderState:OnLeftButtonDown()
     end

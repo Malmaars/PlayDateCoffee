@@ -223,5 +223,5 @@ function ShowButtonPrompt(inputType, promptText)
 end
 
 StateSwitchingCoroutine = coroutine.create( function() 
-                                                SwitchState("piston")  
+                                                SwitchState("grinder")  
                                                 end)
