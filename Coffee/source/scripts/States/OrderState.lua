@@ -54,7 +54,8 @@ import "../Receipt"
         self.speechBubbleAnimationSprite:setZIndex(2)
         self.speechBubbleAnimationSprite:moveTo(200,80)
 
-        self.speechBubbleActive = false;
+        self.speechBubbleActive = false
+        self.receiptPrinted = false
 
         self.cashRegisterImage = gfx.image.new("images/CashRegister")
         self.cashRegisterTableSprite = gfx.sprite.new(self.cashRegisterImage)
@@ -71,11 +72,17 @@ import "../Receipt"
         self.smallReceiptSprite:setZIndex(3)
         self.smallReceiptSprite:moveTo(313,150)    
 
-        self.bigReceipt = Receipt:new(300, 120, 6)
+        self.bigReceipt = nil
 
+        self.askedOrder = nil
+        --there fits another receipt next to it, at x = 100
 
-        allMySprites = {self.backgroundSprite, self.orderTableSprite, self.cashRegisterTableSprite, self.customerSprite, 
-                        self.smallReceiptSprite, self.bigReceipt}
+        allMySprites = {self.backgroundSprite, 
+                        self.orderTableSprite, 
+                        self.cashRegisterTableSprite, 
+                        self.customerSprite, 
+                        self.smallReceiptSprite, 
+                        self.bigReceipt}
       return self
     end
 
@@ -93,17 +100,24 @@ import "../Receipt"
         StartStateSwitch("piston")
     end
     function OrderState:OnUpButtonDown()
-        StartStateSwitch("bean choice")
     end
     function OrderState:OnLeftButtonDown()
     end
     function OrderState:OnRightButtonDown()
     end
     function OrderState:OnAButtonDown()
-        if printReceiptCoroutine == nil or coroutine.status(printReceiptCoroutine) == "dead" then
+        if (printReceiptCoroutine == nil or coroutine.status(printReceiptCoroutine) == "dead") and self.receiptPrinted == false then
             printReceiptCoroutine = coroutine.create(  function()
                                                                 self:PrintReceipt()
                                                                 end)
+        end
+
+        if self.receiptPrinted == true then
+            -- take the order and move to the next phase
+            SetAskedOrder(self.askedOrder)
+            ResetMakingOrder()
+            StartStateSwitch("bean choice")
+
         end
 
         --go to the next state
@@ -133,10 +147,12 @@ import "../Receipt"
     end
     
     function OrderState:PrintReceipt()
+        
         --set the small and large receipt at the starting positions
         self.smallReceiptSprite:moveTo(313,150)
-        self.bigReceipt:moveTo(300, -120)
-        print("printing receipt")
+        self.bigReceipt:moveTo(300,-120)        
+        --TODO make a new order and assign it to the receipt
+
         --move the small receipt up
         --Y: 115, then 110, then 100
         local currentCoroutine = coroutine.create(  function()
@@ -173,12 +189,13 @@ import "../Receipt"
         local currentCoroutine = coroutine.create(  function()
                                                         MoveSprite(self.bigReceipt, 300, -120, 300, 120, 0.05, true)
                                                     end)
-        
+
         while currentCoroutine ~= nil and coroutine.status(currentCoroutine) ~= "dead" do
             UpdateCoroutine(currentCoroutine)
             coroutine.yield()
         end
 
+        self.receiptPrinted = true
         --move the large receipt down
         --start: (300, -120) destination: (300,120)
     end
@@ -193,12 +210,18 @@ import "../Receipt"
         customerMoveInCoroutine = coroutine.create(  function()
                                                         MoveSprite(self.customerSprite, -100, 150, 80, 150, 0.01)
                                                     end)
+        self.askedOrder = Order:new(nil,nil, 6, 8, 3)
+        self.bigReceipt = Receipt:new(300, -120, 6, self.askedOrder)
+
+        --WATCH OUT, IMPORTANT, this is heavily dependend on bigreceipt being on the 6th position in the array, keep it that way!
+        table.insert(allMySprites, 6, self.bigReceipt)
+        table.remove(allMySprites, 7)
 
         for _, mySprite in pairs(allMySprites) do
             mySprite:add()
         end
-        self.bigReceipt:moveTo(300,-120)        
         self.speechBubbleSprite:remove()
+        self.receiptPrinted = false
     end
     
     function OrderState.__index(tab, key)

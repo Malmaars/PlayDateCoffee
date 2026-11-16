@@ -12,6 +12,8 @@ import "scripts/states/BeanChoice"
 import "scripts/states/TestImage"
 import "scripts/states/OrderState"
 import "scripts/states/PistonState"
+import "scripts/Order"
+import "scripts/Receipt"
 import "scripts/Fonts"
 import "scripts/Product"
 --fonts
@@ -41,18 +43,33 @@ local piston = PistonState.new()
 -- testSprite:moveTo(200,120)
 -- testSprite:add()
 
+--I want the current order to persist between states, so I might just locate it here
+local currentAskedOrder
+local currentAskedReceipt = Receipt:new(100, -120, 30, Order:new(nil,nil,0,0,0))   
+local currentMakingOrder
+local currentMakingReceipt = Receipt:new(300, -120, 30, Order:new(nil,nil,0,0,0))
+local orderPreviewCoroutine = nil
+local orderPreviewRoutineRunning = false
+local orderShown = false
+
 local transitionImage = gfx.image.new("images/fullBlack")
 local transitionSprite = gfx.sprite.new(transitionImage)
 transitionSprite:setZIndex(100)
 local transitionAnimator
 local currentProduct
 
+local allMySprites = {currentAskedReceipt,
+                        currentMakingReceipt}
+                        
 function pd.update()
     if CurrentState ~= nil then
-        CurrentState:update()
+        if orderShown == false then
+            CurrentState:update()
+        end
     end
 
     UpdateCoroutine(StateSwitchingCoroutine)
+    UpdateCoroutine(orderPreviewCoroutine)
 
     --draw the sprites
     gfx.sprite.update()
@@ -66,31 +83,92 @@ function pd.update()
 end
 
 function pd.AButtonDown()
-    CurrentState:OnAButtonDown()
+    if  orderShown == false then
+        CurrentState:OnAButtonDown()
+    end
 end
 function pd.AButtonUp()
-    CurrentState:OnAButtonUp()
+    if  orderShown == false then
+        CurrentState:OnAButtonUp()
+    end
 end
 function pd.BButtonUp()
-    CurrentState:OnBButtonUp()
+    if  orderShown == false then
+        CurrentState:OnBButtonUp()
+    end
 end
 function pd.BButtonDown()
-    CurrentState:OnBButtonDown()
+    if  orderShown == false then
+        CurrentState:OnBButtonDown()
+    end
 end
 
+
 function pd.upButtonDown()
-    CurrentState:OnUpButtonDown()
+    if (orderPreviewCoroutine == nil or coroutine.status(orderPreviewCoroutine) == "dead") then
+            orderPreviewCoroutine = coroutine.create(  function()
+                                                                ShowOrderPreview()
+                                                                end)
+    end
+    if  orderShown == false then
+        CurrentState:OnUpButtonDown()
+    end
 end
 function pd.downButtonDown()
-    CurrentState:OnDownButtonDown()
+    if  orderShown == false then
+        CurrentState:OnDownButtonDown()
+    end
 end
 
 function pd.leftButtonDown()
-    CurrentState:OnLeftButtonDown()
+    if  orderShown == false then
+        CurrentState:OnLeftButtonDown()
+    end
 end
 
 function pd.rightButtonDown()
-    CurrentState:OnRightButtonDown()
+    if  orderShown == false then
+        CurrentState:OnRightButtonDown()
+    end
+end
+function ShowOrderPreview()
+    print(orderPreviewRoutineRunning)
+    if orderPreviewRoutineRunning == true then
+        return
+    end
+    local askedCoroutine 
+    local makingCoroutine
+    if orderShown == false then
+        --show what the customer ordered, and what the state is of what you're making right now
+        askedCoroutine = coroutine.create(  function()
+                                                            MoveSprite(currentAskedReceipt, 100, -120, 100, 120, 0.05, true)
+                                                        end)
+        makingCoroutine = coroutine.create(  function()
+                                                            MoveSprite(currentMakingReceipt, 300, -120, 300, 120, 0.05, true)
+                                                        end)
+        orderShown = true
+    else
+        askedCoroutine = coroutine.create(  function()
+                                                            MoveSprite(currentAskedReceipt, 100, 120, 100, -120, 0.05, true)
+                                                        end)
+        makingCoroutine = coroutine.create(  function()
+                                                            MoveSprite(currentMakingReceipt, 300, 120, 300, -120, 0.05, true)
+                                                        end)
+        orderShown = false
+    end
+
+    orderPreviewRoutineRunning = true
+
+    while  (askedCoroutine ~= nil and coroutine.status(askedCoroutine) ~= "dead") or (makingCoroutine ~= nil and coroutine.status(makingCoroutine) ~= "dead") do
+        if makingCoroutine ~= nil and coroutine.status(makingCoroutine) ~= "dead" then
+            UpdateCoroutine(makingCoroutine)
+        end
+        if askedCoroutine ~= nil and coroutine.status(askedCoroutine) ~= "dead" then
+            UpdateCoroutine(askedCoroutine)
+        end
+            coroutine.yield()
+    end
+    orderPreviewRoutineRunning = false
 end
 
 function MakeNewProduct()
@@ -107,6 +185,21 @@ function UpdateCurrentProduct(beans, fluid, cup)
     if cup ~= nil then
         currentProduct:SetCupType(cup)
     end
+end
+
+function SetAskedOrder(newOrder)
+    currentAskedOrder = newOrder
+    currentAskedReceipt:edit("fullOrder", newOrder)  
+end
+
+function ResetMakingOrder()
+    currentMakingOrder = Order:new(nil, nil, 0, 0, 0)
+    currentMakingReceipt:edit("body", 0)
+    currentMakingReceipt:edit("aroma", 0)
+    currentMakingReceipt:edit("acidity", 0)
+end
+
+function EditMakingOrder()
 end
 
 
@@ -227,6 +320,9 @@ function ShowButtonPrompt(inputType, promptText)
     
 end
 
+for _, mySprite in pairs(allMySprites) do
+    mySprite:add()
+end
 StateSwitchingCoroutine = coroutine.create( function() 
-                                                SwitchState("piston")  
+                                                SwitchState("order")  
                                                 end)

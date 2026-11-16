@@ -68,6 +68,9 @@ import "../CoroutineManager"
         self.pistonClickSprite:setImage(self.pistonClickLoop:image())
     end
     function PistonState:DrawAfterSprites()
+        if pd.isCrankDocked() then
+            pd.ui.crankIndicator:draw(0,0)
+        end
     end
 
     function PistonState:AnimatePiston()
@@ -132,7 +135,6 @@ import "../CoroutineManager"
         StartStateSwitch("grinder")
     end
     function PistonState:OnUpButtonDown()
-        StartStateSwitch("order")
     end
     function PistonState:OnLeftButtonDown()
         self:onStateEnter()

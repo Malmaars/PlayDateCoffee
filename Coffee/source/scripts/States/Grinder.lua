@@ -12,6 +12,8 @@ import "../CoroutineManager"
     local pd = playdate
     local gfx = pd.graphics
 
+    local active
+
     local currentGrinderIndex = 1
     local grinderShakeCoroutine
 
@@ -84,8 +86,6 @@ import "../CoroutineManager"
         self.slowerAnimationSprite = gfx.sprite.new(self.slowerAnimationLoop:image())
         self.slowerAnimationSprite:setZIndex(6)
         self.slowerAnimationSprite:moveTo(260,120)
-
-        performanceTimer = pd.timer.new(700, function() CheckGrinderHit(self, performanceTimer) end)
 
         --this seems inefficient, but keep in mind that this took me literally 10 seconds, doesn't get more efficient than that
         local emptySquareImage = gfx.image.new("images/SmallSquareEmpty")
@@ -285,7 +285,7 @@ import "../CoroutineManager"
     end
 
     function CheckGrinderHit(grinder, timer)
-        if correctlyHitGrinds >= 18 then
+        if correctlyHitGrinds >= 18 or active == false then
             return
         end
         if grinder.cursorSprite.y >= 119 and grinder.cursorSprite.y <= 121 then
@@ -308,6 +308,8 @@ import "../CoroutineManager"
         elseif grinder.cursorSprite.y > 132 then
             grinder.fasterAnimationLoop.frame = 1
         end
+
+
         performanceTimer = pd.timer.new(700, function() CheckGrinderHit(grinder, performanceTimer) end)
     end
 
@@ -329,6 +331,8 @@ import "../CoroutineManager"
             perfectSquares[i]:remove()
             squareCompletionanimations[i]:remove()
         end
+
+        active = false
     end
 
     function Grinder:onStateEnter()
@@ -345,11 +349,14 @@ import "../CoroutineManager"
             emptySquares[i]:add()
             squareCompletionanimations[i]:add()
         end
+        active = true
         self:ResetData()
     end
 
     function Grinder:ResetData()
         correctlyHitGrinds = 0 
+
+        --also reset the timer that's already running
         performanceTimer = pd.timer.new(700, function() CheckGrinderHit(self, performanceTimer) end)
     end
     function Grinder:DrawAfterSprites()
@@ -361,7 +368,6 @@ import "../CoroutineManager"
         StartStateSwitch("bean choice")
     end
     function Grinder:OnUpButtonDown()
-        StartStateSwitch("piston")
     end
     function Grinder:OnLeftButtonDown()
     end

@@ -131,7 +131,6 @@ function BeanChoice:OnDownButtonDown()
     StartStateSwitch("order")
 end
 function BeanChoice:OnUpButtonDown()
-    StartStateSwitch("grinder")
 end
 
 function BeanChoice:OnLeftButtonDown()

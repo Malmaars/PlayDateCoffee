@@ -16,11 +16,11 @@ local acidity
 Order = {}
 
 
-function Order:new(_product, _beanType, _aroma, _body, _acidity)
+function Order:new(_orderType, _beanType, _aroma, _body, _acidity)
     local o = {}   
     setmetatable(o, self)
     
-    o.myProduct = _product
+    o.orderType = _orderType 
     o.beanType = _beanType
     o.aroma = _aroma
     o.body = _body
