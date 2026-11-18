@@ -12,6 +12,7 @@ import "scripts/states/BeanChoice"
 import "scripts/states/TestImage"
 import "scripts/states/OrderState"
 import "scripts/states/PistonState"
+import "scripts/states/EditOrder"
 import "scripts/Order"
 import "scripts/Receipt"
 import "scripts/Fonts"
@@ -36,6 +37,7 @@ local beanChoiceState = BeanChoice.new()
 local testImageState = TestImage.new()
 local orderState = OrderState.new()
 local piston = PistonState.new()
+local editOrder = EditOrder.new()
 
 -- local TestImage = gfx.image.new("images/test")
 -- local testSprite = gfx.sprite.new(TestImage)
@@ -45,9 +47,9 @@ local piston = PistonState.new()
 
 --I want the current order to persist between states, so I might just locate it here
 local currentAskedOrder
-local currentAskedReceipt = Receipt:new(100, -120, 30, Order:new(nil,nil,0,0,0))   
+currentAskedReceipt = Receipt:new(100, -120, 30, Order:new(nil,nil,0,0,0))   
 local currentMakingOrder
-local currentMakingReceipt = Receipt:new(300, -120, 30, Order:new(nil,nil,0,0,0))
+currentMakingReceipt = Receipt:new(300, -120, 30, Order:new(nil,nil,0,0,0))
 local orderPreviewCoroutine = nil
 local orderPreviewRoutineRunning = false
 local orderShown = false
@@ -55,7 +57,7 @@ local orderShown = false
 local transitionImage = gfx.image.new("images/fullBlack")
 local transitionSprite = gfx.sprite.new(transitionImage)
 transitionSprite:setZIndex(100)
-local transitionAnimator
+transitionAnimator = nil
 local currentProduct
 
 local allMySprites = {currentAskedReceipt,
@@ -72,6 +74,7 @@ function pd.update()
     UpdateCoroutine(orderPreviewCoroutine)
 
     --draw the sprites
+    print("update the sprites")
     gfx.sprite.update()
     
     --draw text after sprites so it's on top
@@ -204,10 +207,7 @@ end
 
 
 function StartStateSwitch(newState)
-
-    
-
-    if StateSwitchingCoroutine == nil or coroutine.status(StateSwitchingCoroutine) == "dead" then     
+    if StateSwitchingCoroutine == nil or coroutine.status(StateSwitchingCoroutine) == "dead" or coroutine.status(StateSwitchingCoroutine) == "suspended" then     
         StateSwitchingCoroutine = coroutine.create( function()
                                                         SwitchState(newState)
                                                     end)
@@ -252,6 +252,8 @@ function SwitchState(newState)
                 newStateVariable = piston
             elseif newState=="order" then
                 newStateVariable = orderState
+            elseif newState=="editOrder" then
+                newStateVariable = editOrder
             end
             newStateVariable:onStateEnter()
 
@@ -283,6 +285,7 @@ function ShakeSprite(sprite, duration)
             posXOffset = math.random(-5,5)
             posYOffset = math.random(-5,5)
         end
+
         sprite:moveTo(originalPosX + posXOffset, originalPosY + posYOffset)
         coroutine.yield()
     end
@@ -324,5 +327,5 @@ for _, mySprite in pairs(allMySprites) do
     mySprite:add()
 end
 StateSwitchingCoroutine = coroutine.create( function() 
-                                                SwitchState("order")  
+                                                SwitchState("editOrder")  
                                                 end)

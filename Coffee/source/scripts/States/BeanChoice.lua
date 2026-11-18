@@ -23,6 +23,7 @@ backgroundSprite:moveTo(200,120)
 local coffeeBags
 
 local currentCrankAngle
+local picked = false
 
 function BeanChoice.new()
     local self = setmetatable({}, BeanChoice)
@@ -188,6 +189,11 @@ function BeanChoice:ChangeDataVisual(coffeeBagReference)
 end
 
 function BeanChoice:OnAButtonDown()
+    if picked == true then
+        print("bag already picked")
+        return
+    end
+    picked = true
     --pick the specific bag, and trigger an open animation
     for _, bag in pairs(coffeeBags) do
         if bag:GetIndex() == 10 then
@@ -195,7 +201,8 @@ function BeanChoice:OnAButtonDown()
             UpdateCurrentProduct(bag.myBeanType, nil, nil)
         end
     end
-    StartStateSwitch("grinder")
+
+    StartStateSwitch("editOrder")
 end
 
 function BeanChoice:OnBButtonDown()
@@ -249,8 +256,8 @@ function BeanChoice:onStateEnter()
                 bag:SetSelected(true)
             end            
         end
-    print("test")
 
+        picked = false
         for _, mySprite in pairs(allMySprites) do
             mySprite:add()
         end
